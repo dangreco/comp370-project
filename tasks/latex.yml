@@ -1,0 +1,42 @@
+---
+# yaml-language-server: $schema=https://taskfile.dev/schema.json
+version: "3"
+
+tasks:
+  clean:
+    desc: Clean LaTeX build artifacts
+    cmds:
+      - rm -rf docs/report/_build
+    silent: true
+
+  build:
+    deps: [clean]
+    desc: Build LaTeX document
+    cmds:
+      - scripts/latex/build.sh docs/report/report.en.tex docs/report/_build
+    silent: true
+
+  watch:
+    desc: Build LaTeX document in watch mode
+    cmds:
+      - scripts/latex/watch.sh docs/report/report.en.tex
+    silent: true
+
+  test:
+    desc: Test LaTeX document
+    deps: [build]
+    cmds: []
+    silent: true
+
+  check:
+    desc: Check LaTeX document
+    cmds:
+      - chktex docs/report/report.en.tex
+      - tex-fmt --check docs/report/report.en.tex
+    silent: true
+
+  fix:
+    desc: Fix LaTeX document
+    cmds:
+      - tex-fmt docs/report/report.en.tex
+    silent: true

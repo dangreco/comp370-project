@@ -1,0 +1,54 @@
+---
+# yaml-language-server: $schema=https://taskfile.dev/schema.json
+version: "3"
+
+includes:
+  latex: ./tasks/latex.yml
+  toml: ./tasks/toml.yml
+  yaml: ./tasks/yaml.yml
+
+tasks:
+  default:
+    desc: List tasks
+    cmds:
+      - task --list
+    silent: true
+
+  clean:
+    desc: Clean the project
+    deps:
+      - latex:clean
+    cmds: []
+    silent: true
+
+  build:
+    desc: Build the project
+    deps:
+      - latex:build
+    cmds: []
+    silent: true
+
+  test:
+    desc: Test the project
+    deps:
+      - latex:test
+    cmds: []
+    silent: true
+
+  check:
+    desc: Check for linting/formatting errors
+    deps:
+      - latex:check
+      - toml:check
+      - yaml:check
+    cmds: []
+    silent: true
+
+  fix:
+    desc: Fix linting/formatting errors
+    deps:
+      - latex:fix
+      - toml:fix
+      - yaml:fix
+    cmds: []
+    silent: true

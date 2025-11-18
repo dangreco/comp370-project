@@ -1,0 +1,17 @@
+---
+# yaml-language-server: $schema=https://taskfile.dev/schema.json
+version: "3"
+
+tasks:
+  check:
+    desc: Check TOML files
+    cmds:
+      - tombi lint .
+      - tombi fmt --check .
+    silent: true
+
+  fix:
+    desc: Fix TOML files
+    cmds:
+      - tombi fmt .
+    silent: true

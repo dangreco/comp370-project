@@ -1,0 +1,2 @@
+task check &> /dev/null
+task fix &> /dev/null

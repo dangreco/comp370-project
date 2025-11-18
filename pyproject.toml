@@ -1,0 +1,18 @@
+[project]
+name = "comp370"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+authors = [{ name = "Dan Greco", email = "me@dangre.co" }]
+dependencies = []
+
+[project.scripts]
+comp370 = "comp370:main"
+
+[build-system]
+requires = ["uv_build>=0.9.7,<0.10.0"]
+build-backend = "uv_build"
+
+[tool.ty.environment]
+python = ".venv"
