@@ -107,9 +107,11 @@
               ];
 
               shellHook = ''
-                mkdir -p .zed
-                cp ${__zed}/settings.json .zed/settings.json
                 export "LD_LIBRARY_PATH=''$LD_LIBRARY_PATH:${libraryPath}"
+                rm -rf .zed || true
+                mkdir -p .zed || true
+                cp ${__zed}/settings.json .zed/settings.json || true
+                husky install > /dev/null 2>&1 || true
               '';
             };
         };

@@ -12,6 +12,8 @@ on:
     paths:
       - "flake.nix"
       - "flake.lock"
+env:
+  HUSKY: 0
 jobs:
   check:
     strategy:
