@@ -24,15 +24,15 @@ dependencies = [
 [project.scripts]
 comp370 = "comp370:main"
 
+[dependency-groups]
+dev = [
+  "httpx>=0.28.1",
+  "pytest>=9.0.1",
+]
+
 [build-system]
 requires = ["uv_build>=0.9.7,<0.10.0"]
 build-backend = "uv_build"
 
 [tool.ty.environment]
 python = ".venv"
-
-[dependency-groups]
-dev = [
-    "httpx>=0.28.1",
-    "pytest>=9.0.1",
-]
