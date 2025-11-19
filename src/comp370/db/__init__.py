@@ -8,11 +8,11 @@ scraped Seinfeld data including seasons, episodes, writers, characters, and dial
 from .models import (
     Base,
     Season,
-    Writer,
+    Person,
     Episode,
     Character,
     Line,
 )
 from .client import Client
 
-__all__ = ["Base", "Season", "Writer", "Episode", "Character", "Line", "Client"]
+__all__ = ["Base", "Season", "Person", "Episode", "Character", "Line", "Client"]

@@ -8,6 +8,7 @@ tasks:
     vars:
       TAG: comp370:latest
     cmd: |
+      mkdir -p .cache
       {{.RUNTIME}} build -f docker/Dockerfile -t {{.TAG}} .
     silent: true
 

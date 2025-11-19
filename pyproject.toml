@@ -7,6 +7,8 @@ requires-python = ">=3.13"
 authors = [{ name = "Dan Greco", email = "me@dangre.co" }]
 dependencies = [
   "beautifulsoup4>=4.14.2",
+  "cachier>=4.1.0",
+  "editdistance>=0.8.1",
   "fastapi>=0.121.2",
   "graphene>=3.4.3",
   "graphene-sqlalchemy==3.0.0rc2",
