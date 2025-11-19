@@ -10,7 +10,7 @@ from graphene import relay
 from graphene_sqlalchemy import SQLAlchemyObjectType
 from graphene_sqlalchemy import SQLAlchemyConnectionField
 
-from comp370.db.models import Season, Episode, Writer, Character, Line
+from comp370.db.models import Season, Episode, Person, Character, Line
 
 
 class SeasonType(SQLAlchemyObjectType):
@@ -29,11 +29,11 @@ class EpisodeType(SQLAlchemyObjectType):
         interfaces = (relay.Node,)
 
 
-class WriterType(SQLAlchemyObjectType):
-    """GraphQL type for Writer model with Relay support."""
+class PersonType(SQLAlchemyObjectType):
+    """GraphQL type for Person model with Relay support."""
 
     class Meta:
-        model = Writer
+        model = Person
         interfaces = (relay.Node,)
 
 
@@ -62,11 +62,11 @@ class Query(graphene.ObjectType):
     """
 
     # Collection queries with Relay pagination
-    all_seasons = SQLAlchemyConnectionField(SeasonType.connection)
-    all_episodes = SQLAlchemyConnectionField(EpisodeType.connection)
-    all_writers = SQLAlchemyConnectionField(WriterType.connection)
-    all_characters = SQLAlchemyConnectionField(CharacterType.connection)
-    all_lines = SQLAlchemyConnectionField(LineType.connection)
+    seasons = SQLAlchemyConnectionField(SeasonType.connection)
+    episodes = SQLAlchemyConnectionField(EpisodeType.connection)
+    people = SQLAlchemyConnectionField(PersonType.connection)
+    characters = SQLAlchemyConnectionField(CharacterType.connection)
+    lines = SQLAlchemyConnectionField(LineType.connection)
 
     # Individual item queries
     season = graphene.Field(
@@ -80,6 +80,12 @@ class Query(graphene.ObjectType):
         season=graphene.Int(required=True),
         number=graphene.Int(required=True),
         description="Get a specific episode by season and episode number",
+    )
+
+    person = graphene.Field(
+        PersonType,
+        name=graphene.String(required=True),
+        description="Get a specific person by name",
     )
 
     character = graphene.Field(
@@ -102,6 +108,11 @@ class Query(graphene.ObjectType):
             .filter(Season.number == season, Episode.number == number)
             .first()
         )
+
+    def resolve_person(self, info, name):
+        """Resolve a person by name."""
+        session = info.context["session"]
+        return session.query(Person).filter(Person.name == name).first()
 
     def resolve_character(self, info, name):
         """Resolve a character by name."""
