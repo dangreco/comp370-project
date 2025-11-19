@@ -6,10 +6,18 @@ Seinfeld episode data including scripts, characters, writers, and metadata.
 """
 
 from starlette.applications import Starlette
-from starlette_graphene3 import GraphQLApp, make_graphiql_handler
+from starlette.routing import Route
+from starlette.routing import Mount
+from starlette.staticfiles import StaticFiles
+from starlette.responses import RedirectResponse
+from starlette_graphene3 import GraphQLApp
 
 from comp370.db import Client as Db
 from comp370.gql import schema
+
+
+async def graphiql_redirect(request):
+    return RedirectResponse("/graphiql/index.html")
 
 
 def create_app():
@@ -17,17 +25,22 @@ def create_app():
     db = Db()
     db.connect()
 
-    # Create Starlette application
-    app = Starlette()
+    graphql_app = GraphQLApp(
+        schema=schema,
+        context_value={"session": db.session()},
+    )
 
-    # Mount GraphQL endpoint with GraphiQL interface
-    app.mount(
-        "/graphql",
-        GraphQLApp(
-            schema=schema,
-            on_get=make_graphiql_handler(),
-            context_value={"session": db.session()},
-        ),
+    # Create Starlette application
+    app = Starlette(
+        routes=[
+            Mount("/graphql", graphql_app),
+            Mount(
+                "/graphiql",
+                StaticFiles(directory="public/graphiql"),
+                name="graphiql",
+            ),
+            Route("/graphiql", graphiql_redirect),
+        ]
     )
 
     return app

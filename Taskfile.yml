@@ -7,6 +7,14 @@ includes:
   toml: ./tasks/toml.yml
   yaml: ./tasks/yaml.yml
   python: ./tasks/python.yml
+  docker:
+    taskfile: ./tasks/container.yml
+    vars:
+      RUNTIME: docker
+  podman:
+    taskfile: ./tasks/container.yml
+    vars:
+      RUNTIME: podman
 
 tasks:
   default:
