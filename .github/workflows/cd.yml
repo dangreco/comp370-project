@@ -37,4 +37,4 @@ jobs:
           nix develop --command task docker:build
           IMAGE=ghcr.io/$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')/comp370:latest
           docker tag comp370:latest "$IMAGE"
-          docker push "$IMAGE
+          docker push "$IMAGE"
