@@ -1,0 +1,57 @@
+---
+# yaml-language-server: $schema=https://taskfile.dev/schema.json
+version: "3"
+
+tasks:
+  venv:
+    desc: Initialize the virtual environment
+    cmd: |
+      if [ ! -d .venv ]; then
+        uv venv --clear &>/dev/null
+        uv sync &>/dev/null
+      fi
+    silent: true
+
+  seed:
+    desc: Seed the database
+    deps:
+      - venv
+    cmd: |
+      if [ ! -f data/comp370.db ]; then
+        uv run scripts/python/seed.py
+      fi
+    silent: true
+
+  run:
+    desc: Run application
+    deps:
+      - venv
+    cmds:
+      - uv run comp370
+    silent: true
+
+  test:
+    desc: Run tests
+    deps:
+      - venv
+      - seed
+    cmds:
+      - uv run scripts/python/test.py
+    silent: true
+
+  check:
+    desc: Check Python code
+    deps:
+      - venv
+    cmds:
+      - ty check -q --error-on-warning .
+      - ruff check -q .
+    silent: true
+
+  fix:
+    desc: Fix Python code
+    deps:
+      - venv
+    cmds:
+      - ruff check -q --fix .
+    silent: true

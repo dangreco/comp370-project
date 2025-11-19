@@ -6,8 +6,8 @@ tasks:
   check:
     desc: Check YAML files
     cmds:
-      - yamllint --strict .
-      - yamlfmt -lint -q .
+      - yamllint --strict . &> /dev/null
+      - yamlfmt -q -lint .
     silent: true
 
   fix:

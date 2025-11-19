@@ -6,6 +6,7 @@ includes:
   latex: ./tasks/latex.yml
   toml: ./tasks/toml.yml
   yaml: ./tasks/yaml.yml
+  python: ./tasks/python.yml
 
 tasks:
   default:
@@ -28,10 +29,25 @@ tasks:
     cmds: []
     silent: true
 
+  run:
+    desc: Run the project
+    deps:
+      - python:run
+    cmds: []
+    silent: true
+
+  seed:
+    desc: Seed the database
+    cmds:
+      - rm -f data/comp370.db
+      - uv run python scripts/python/seed.py
+    silent: true
+
   test:
     desc: Test the project
     deps:
       - latex:test
+      - python:test
     cmds: []
     silent: true
 
@@ -41,6 +57,7 @@ tasks:
       - latex:check
       - toml:check
       - yaml:check
+      - python:check
     cmds: []
     silent: true
 
@@ -50,5 +67,6 @@ tasks:
       - latex:fix
       - toml:fix
       - yaml:fix
+      - python:fix
     cmds: []
     silent: true
