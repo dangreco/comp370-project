@@ -4,10 +4,6 @@
 # yamllint disable rule:comments
 name: Nix
 on:
-  push:
-    paths:
-      - "flake.nix"
-      - "flake.lock"
   pull_request:
     paths:
       - "flake.nix"
