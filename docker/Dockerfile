@@ -11,6 +11,7 @@ COPY README.md /app/README.md
 WORKDIR /app
 
 # Install dependencies
+RUN apk add --no-cache g++ gcc make musl-dev python3-dev
 RUN uv sync --frozen
 
 # Seed database
