@@ -1,0 +1,28 @@
+---
+# yaml-language-server: $schema=https://taskfile.dev/schema.json
+version: "3"
+
+tasks:
+  run:
+    desc: Run application
+    cmds:
+      - uv run comp370
+    silent: true
+
+  test:
+    desc: Run tests
+    cmds: []
+    silent: true
+
+  check:
+    desc: Check Python code
+    cmds:
+      - ty check -q --error-on-warning .
+      - ruff check -q .
+    silent: true
+
+  fix:
+    desc: Fix Python code
+    cmds:
+      - ruff check -q --fix .
+    silent: true

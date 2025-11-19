@@ -52,3 +52,6 @@ jobs:
 
       - name: Run tests
         run: nix develop --command task test
+
+      - name: Run mock server test
+        run: nix develop --command uv run python scripts/python/test.py

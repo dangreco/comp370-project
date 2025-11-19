@@ -31,12 +31,12 @@ tasks:
   check:
     desc: Check LaTeX document
     cmds:
-      - chktex docs/report/report.en.tex
-      - tex-fmt --check docs/report/report.en.tex
+      - chktex -q docs/report/report.en.tex
+      - tex-fmt -q --check docs/report/report.en.tex
     silent: true
 
   fix:
     desc: Fix LaTeX document
     cmds:
-      - tex-fmt docs/report/report.en.tex
+      - tex-fmt -q docs/report/report.en.tex
     silent: true
