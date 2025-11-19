@@ -9,6 +9,7 @@ import re
 from datetime import datetime
 from requests import Session
 from requests_cache import CachedSession
+from importlib.metadata import version
 from bs4 import BeautifulSoup
 from typing import Optional
 
@@ -48,7 +49,7 @@ class Client:
         """
         if session is None:
             session = CachedSession(DIR_DATA / "requests.db", expire_after=3600)
-            session.headers.update({"User-Agent": "comp370-project/0.1"})
+            session.headers.update({"User-Agent": f"{__package__}/{version}"})
 
         self.session = session
         self.base_url = base_url or IMSDB_BASE_URL
@@ -152,7 +153,7 @@ class Client:
                 soup.findAll("b"),
             )
         )
-        match = re.search("[A-Za-z]+ \d{2}, \d{4}", b.next_sibling.text.strip())
+        match = re.search(r"[A-Za-z]+ \d{2}, \d{4}", b.next_sibling.text.strip())
         assert match, f"Failed to find air date for episode {title}"
         air_date = datetime.strptime(match.group(), "%B %d, %Y").date()
 
