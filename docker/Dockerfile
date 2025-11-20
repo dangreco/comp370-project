@@ -1,5 +1,6 @@
 FROM ghcr.io/astral-sh/uv:alpine
 
+COPY .cache/ /app/.cache/
 COPY src /app/src
 COPY public /app/public
 COPY scripts/python/seed.py /app/scripts/python/seed.py
@@ -10,10 +11,12 @@ COPY README.md /app/README.md
 WORKDIR /app
 
 # Install dependencies
+RUN apk add --no-cache g++ gcc make musl-dev python3-dev
 RUN uv sync --frozen
 
 # Seed database
 RUN uv run python scripts/python/seed.py
+RUN rm -rf .cache
 
 # Expose port 8000 for the API
 EXPOSE 8000

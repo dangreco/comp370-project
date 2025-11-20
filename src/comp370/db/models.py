@@ -6,9 +6,8 @@ writers, characters, and dialogue lines with their relationships.
 """
 
 from __future__ import annotations
-from datetime import date
+import datetime
 from typing import List
-from typing import Optional
 from sqlalchemy import ForeignKey
 from sqlalchemy import Table
 from sqlalchemy import Column
@@ -30,7 +29,7 @@ episode_writer_link = Table(
     "episode_writer_link",
     Base.metadata,
     Column("episode_id", Integer, ForeignKey("episode.id"), primary_key=True),
-    Column("writer_id", Integer, ForeignKey("writer.id"), primary_key=True),
+    Column("writer_id", Integer, ForeignKey("person.id"), primary_key=True),
 )
 
 # Association table for many-to-many relationship between episodes and characters
@@ -38,6 +37,14 @@ episode_character_link = Table(
     "episode_character_link",
     Base.metadata,
     Column("episode_id", Integer, ForeignKey("episode.id"), primary_key=True),
+    Column("character_id", Integer, ForeignKey("character.id"), primary_key=True),
+)
+
+# Association table for many-to-many relationship between persons and characters
+person_character_link = Table(
+    "person_character_link",
+    Base.metadata,
+    Column("person_id", Integer, ForeignKey("person.id"), primary_key=True),
     Column("character_id", Integer, ForeignKey("character.id"), primary_key=True),
 )
 
@@ -84,7 +91,7 @@ class Episode(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     number: Mapped[int] = mapped_column(nullable=False)
     title: Mapped[str] = mapped_column(nullable=False)
-    air_date: Mapped[date] = mapped_column(nullable=False)
+    date: Mapped[datetime.date] = mapped_column(nullable=False)
 
     season: Mapped["Season"] = relationship(back_populates="episodes")
     season_id: Mapped[int] = mapped_column(
@@ -92,9 +99,9 @@ class Episode(Base):
         nullable=False,
     )
 
-    writers: Mapped[List["Writer"]] = relationship(
+    writers: Mapped[List["Person"]] = relationship(
         secondary="episode_writer_link",
-        back_populates="episodes",
+        back_populates="written",
     )
 
     characters: Mapped[List["Character"]] = relationship(
@@ -109,28 +116,30 @@ class Episode(Base):
     )
 
 
-class Writer(Base):
+class Person(Base):
     """
-    Represents a writer who worked on Seinfeld episodes.
+    Represents a person who worked on Seinfeld episodes.
 
     Attributes:
         id: Primary key
-        first_name: Writer's first name
-        middle_name: Writer's middle name (optional)
-        last_name: Writer's last name
-        episodes: List of episodes this writer worked on
+        name: Person's name
+        written: List of episodes this person wrote
+        characters: List of characters this person acted as
     """
 
-    __tablename__ = "writer"
+    __tablename__ = "person"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    first_name: Mapped[str] = mapped_column(nullable=False)
-    middle_name: Mapped[Optional[str]] = mapped_column(nullable=True)
-    last_name: Mapped[str] = mapped_column(nullable=False)
+    name: Mapped[str] = mapped_column(nullable=False)
 
-    episodes: Mapped[List["Episode"]] = relationship(
+    written: Mapped[List["Episode"]] = relationship(
         secondary="episode_writer_link",
         back_populates="writers",
+    )
+
+    characters: Mapped[List["Character"]] = relationship(
+        secondary="person_character_link",
+        back_populates="actors",
     )
 
 
@@ -140,22 +149,35 @@ class Character(Base):
 
     Attributes:
         id: Primary key
-        name: Character name (e.g., "JERRY", "GEORGE")
+        name: Character name (e.g., "Jerry Seinfeld")
+        gender: Character gender (e.g., "male", "female")
+        occupation: Character occupation (e.g., "comedian", "actor")
         episodes: List of episodes this character appears in
         lines: All dialogue lines spoken by this character
+        actors: List of actors who played this character
     """
 
     __tablename__ = "character"
 
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(nullable=False)
+    gender: Mapped[str] = mapped_column(nullable=False)
+    occupation: Mapped[str] = mapped_column(nullable=False)
 
     episodes: Mapped[List["Episode"]] = relationship(
         secondary="episode_character_link",
         back_populates="characters",
     )
 
-    lines: Mapped[List["Line"]] = relationship(back_populates="character")
+    actors: Mapped[List["Person"]] = relationship(
+        secondary="person_character_link",
+        back_populates="characters",
+    )
+
+    lines: Mapped[List["Line"]] = relationship(
+        back_populates="character",
+        cascade="all, delete-orphan",
+    )
 
 
 class Line(Base):
@@ -165,7 +187,7 @@ class Line(Base):
     Attributes:
         id: Primary key
         number: Line number within the episode (sequential)
-        text: The dialogue text
+        dialogue: The dialogue text
         episode_id: Foreign key to Episode
         episode: The episode this line is from
         character_id: Foreign key to Character
@@ -176,7 +198,7 @@ class Line(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     number: Mapped[int] = mapped_column(nullable=False)
-    text: Mapped[str] = mapped_column(nullable=False)
+    dialogue: Mapped[str] = mapped_column(nullable=False)
 
     episode: Mapped["Episode"] = relationship(back_populates="lines")
     episode_id: Mapped[int] = mapped_column(

@@ -1,142 +1,221 @@
-"""
-Database seeding script for Seinfeld episode data.
-
-This script scrapes all Seinfeld episodes from IMSDB and populates
-the database with seasons, episodes, writers, characters, and dialogue lines.
-"""
-
 import tqdm
-import time
-from functools import reduce
+import string
+import editdistance
 
 from comp370.db import Client as Db
 from comp370.db.models import (
     Season,
-    Writer,
-    Character,
     Episode,
+    Person,
+    Character,
     Line,
 )
-from comp370.scraper import Client as Scraper
+from comp370.client.fandom import Client as Fandom
+from comp370.client.imsdb import Client as Imsdb
 
 
 def main():
-    """
-    Scrape Seinfeld data and populate the database.
-
-    This function:
-    1. Scrapes all seasons and episodes from IMSDB
-    2. Extracts episode metadata, scripts, writers, and characters
-    3. Writes all data to the SQLite database with proper relationships
-
-    The script includes a small delay between requests to be respectful
-    to the IMSDB server and uses caching to avoid redundant requests.
-    """
     db = Db()
-    scraper = Scraper()
+    fandom = Fandom()
+    imsdb = Imsdb()
 
     # ----------------------------------------
     # Scrape data
     # ----------------------------------------
 
-    print("Scraping seasons...")
-    seasons_ = scraper.get_seasons()
+    print("======== SCRAPING ========")
+    print("Scraping characters...")
 
-    print("Scraping episodes...")
-    episodes_ = {}
+    # Get character paths from Fandom
+    paths = set()
+    letters = string.ascii_uppercase
+    for i in tqdm.tqdm(range(len(letters))):
+        paths_ = fandom.characters().get_paths_by_letter(letters[i])
+        paths.update(paths_)
+    paths = list(paths)
 
-    total = reduce(lambda acc, s: acc + len(s.episodes), seasons_, 0)
-    pbar = tqdm.tqdm(total, unit=" episodes", ncols=100)
+    # Get character data from Fandom
+    characters = {}
+    for i in tqdm.tqdm(range(len(paths))):
+        path = paths[i]
+        character = fandom.characters().get(path)
+        characters[(character.name, character.episode)] = character
 
-    for season in seasons_:
-        for i, title in enumerate(season.episodes):
-            episode = scraper.get_episode(title)
-            script = scraper.get_script(title)
-            episodes_[(season.number, i + 1)] = (episode, script)
-            pbar.update(1)
-            time.sleep(0.1)
+    # Get lines
+    seasons = imsdb.seasons().get()  # [ season1, season2, ... ]
+    episodes = {}  # { (s.number, e.number) : e, ... }
+    lines = {}  # { (s.number, e.number, l.number, c.name) : l, ... }
 
-    pbar.close()
+    # Scrape lines
+    for season in seasons:
+        print(f"Scraping season {season.number}...")
+        for i in tqdm.tqdm(range(len(season.episodes))):
+            episode = season.episodes[i]
+            episodes[(season.number, episode.number)] = episode
+            for line in imsdb.episodes().get(episode.title):
+                lines[(season.number, episode.number, line.number, line.character)] = (
+                    line
+                )
+
+    print("Resolving character names...")
+    resolved = {}  # { (name, episode title) : canonical name }
+
+    def resolve(sn: int, en: int, name: str):
+        COMMON = {
+            "jerry": "Jerry Seinfeld",
+            "george": "George Costanza",
+            "elaine": "Elaine Benes",
+            "kramer": "Cosmo Kramer",
+            "newman": "Newman",
+            "ruthie": "Ruthie Cohen",
+            "morty": "Morty Seinfeld",
+            "helen": "Helen Seinfeld",
+            "frank": "Frank Costanza",
+            "estelle": "Estelle Costanza",
+            "leo": "Uncle Leo",
+            "babs": "Babs Kramer",
+            "david": "David Puddy",
+            "puddy": "David Puddy",
+            "tim": "Tim Whatley",
+            "kenny": "Kenny Bania",
+            "lloyd": "Lloyd Braun",
+            "jackie": "Jackie Chiles",
+            "jacopo": "Jacopo Peterman",
+            "justin": "Justin Pitt",
+            "robin": "Robin",
+            "babu": "Babu Bhatt",
+            "soup nazi": "Yev Kassem",
+        }
+        ln = name.lower()
+        episode_title = episodes[(sn, en)].title.lower()
+        if ln in COMMON:
+            resolved[(sn, en, name)] = COMMON[ln]
+            return
+        else:
+            possible = []
+            for c, e in characters.keys():
+                if e and not e.lower() == episode_title.lower():
+                    continue
+                parts = c.lower().split()
+                for p in parts:
+                    distance = editdistance.eval(ln, p)
+                    if distance < 3:
+                        possible.append((c, distance))
+
+            if possible:
+                best = min(possible, key=lambda x: x[1])
+                resolved[(sn, en, name)] = best[0]
+                return
+
+    for (sn, en, _, c), line in lines.items():
+        resolve(sn, en, c)
 
     # Collect writers
-    writers_ = set()
-    for _, (episode, _) in episodes_.items():
-        writers_.update(episode.writers)
+    print("Resolving writers...")
+    writers = set()
+    for episode in episodes.values():
+        writers.update(episode.writers)
 
-    # Collect characters
-    characters_ = set()
-    for _, (_, script) in episodes_.items():
-        for character, _ in script.lines:
-            characters_.add(character)
+    # Collect actors
+    print("Resolving actors...")
+    actors = set()
+    for character in characters.values():
+        actors.update(character.portrayed_by)
 
     # ----------------------------------------
     # Write to database
     # ----------------------------------------
 
+    print("======== WRITING ========")
     with db.session() as session:
-        # Seasons
-        print("Writing seasons...")
-        seasons = {s.number: Season(number=s.number) for s in seasons_}
-        session.add_all(seasons.values())
+        pass
+
+        # People
+        print("Writing people...")
+        people__ = {}
+
+        for writer in writers:
+            if writer not in people__:
+                person = Person(name=writer)
+                people__[writer] = person
+                session.add(person)
+
+        for actor in actors:
+            if actor not in people__:
+                person = Person(name=actor)
+                people__[actor] = person
+                session.add(person)
+
         session.commit()
 
-        # Writers
-        print("Writing writers...")
-        writers = {}
-        for name in writers_:
-            names = name.split()
-            if len(names) == 2:
-                first, last = names
-                middle = None
-            elif len(names) == 3:
-                first, middle, last = names
-            else:
-                raise ValueError(f"Invalid writer name: {name}")
-            writers[name] = Writer(first_name=first, middle_name=middle, last_name=last)
+        # Seasons
+        print("Writing seasons...")
+        seasons__ = {}
+        for season in seasons:
+            if season.number not in seasons__:
+                __season__ = Season(number=season.number)
+                seasons__[season.number] = __season__
+                session.add(__season__)
 
-        session.add_all(writers.values())
         session.commit()
 
         # Characters
         print("Writing characters...")
-        characters = {name: Character(name=name) for name in characters_}
-        session.add_all(characters.values())
+        characters__ = {}
+        for character in characters.values():
+            if character.name not in characters__:
+                __actors__ = [people__[actor] for actor in character.portrayed_by]
+                __character__ = Character(
+                    name=character.name,
+                    gender=character.gender,
+                    occupation=character.occupation,
+                    actors=__actors__,
+                )
+
+                characters__[character.name] = __character__
+                session.add(__character__)
+
         session.commit()
 
         # Episodes
         print("Writing episodes...")
-        episodes = {}
+        episodes__ = {}
+        for (sn, en), episode in episodes.items():
+            __characters__ = []
+            for sn_, en_, _, c in lines.keys():
+                if sn_ == sn and en_ == en:
+                    if (sn_, en_, c) in resolved:
+                        __characters__.append(characters__[resolved[(sn_, en_, c)]])
 
-        for (sn, en), (episode, script) in episodes_.items():
-            # Determine all characters that appear in the episode
-            character_names = {c for (c, _) in script.lines}
+            __writers__ = [people__[w] for w in episode.writers]
 
-            episodes[(sn, en)] = Episode(
+            __episode__ = Episode(
                 title=episode.title,
-                number=en,
-                air_date=episode.air_date,
-                season=seasons[sn],
-                writers=[writers[w] for w in episode.writers],
-                characters=[characters[c] for c in character_names],
+                number=episode.number,
+                date=episode.date,
+                season=seasons__[sn],
+                writers=__writers__,
+                characters=__characters__,
             )
+            episodes__[(sn, en)] = __episode__
+            session.add(__episode__)
 
-        session.add_all(episodes.values())
         session.commit()
 
         # Lines
         print("Writing lines...")
+        for (sn, en, ln, c), line in lines.items():
+            if (sn, en, c) in resolved:
+                __episode__ = episodes__[(sn, en)]
+                __character__ = characters__[resolved[(sn, en, c)]]
 
-        for (sn, en), (_, script) in episodes_.items():
-            ep = episodes[(sn, en)]
-            for i, (character, text) in enumerate(script.lines):
-                session.add(
-                    Line(
-                        number=i + 1,
-                        text=text,
-                        episode=ep,
-                        character=characters[character],
-                    )
+                __line__ = Line(
+                    number=line.number,
+                    dialogue=line.dialogue,
+                    episode=__episode__,
+                    character=__character__,
                 )
+                session.add(__line__)
 
         session.commit()
 

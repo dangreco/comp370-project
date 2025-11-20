@@ -14,7 +14,7 @@ from sqlalchemy.orm import Session
 
 from comp370.constants import DIR_DATA
 from .constants import SQLITE_DATABASE
-from .models import Base, Season, Episode, Writer, Character, Line  # noqa: F401
+from .models import Base, Season, Episode, Person, Character, Line  # noqa: F401
 
 
 class Client:

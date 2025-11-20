@@ -12,9 +12,12 @@ from importlib.resources import files
 # Root directory of the project
 DIR_ROOT = Path(files(__package__)).parent.parent
 
-# Data directory for storing databases and cached data
+# Data directory for storing databases
 DIR_DATA = DIR_ROOT / "data"
 
+# Cache directory for storing cached data
+DIR_CACHE = DIR_ROOT / ".cache"
+
 # Ensure all required directories exist
-for dir in [DIR_DATA]:
+for dir in [DIR_DATA, DIR_CACHE]:
     os.makedirs(dir, exist_ok=True)
