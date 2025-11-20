@@ -13,6 +13,7 @@ dependencies = [
   "graphene>=3.4.3",
   "graphene-sqlalchemy==3.0.0rc2",
   "importlib>=1.0.4",
+  "pandas>=2.3.3",
   "promise>=2.3",
   "requests>=2.32.5",
   "requests-cache>=1.2.1",

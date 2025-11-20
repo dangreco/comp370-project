@@ -5,13 +5,13 @@ version: "3"
 tasks:
   check:
     desc: Check YAML files
-    cmds:
-      - yamllint --strict . &> /dev/null
-      - yamlfmt -q -lint .
     silent: true
+    cmds:
+      - yamllint --strict .
+      - yamlfmt -lint .
 
   fix:
     desc: Fix YAML files
+    silent: true
     cmds:
       - yamlfmt -q .
-    silent: true

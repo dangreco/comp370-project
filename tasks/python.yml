@@ -5,53 +5,43 @@ version: "3"
 tasks:
   venv:
     desc: Initialize the virtual environment
+    silent: true
     cmd: |
       if [ ! -d .venv ]; then
         uv venv --clear &>/dev/null
         uv sync &>/dev/null
       fi
-    silent: true
-
-  seed:
-    desc: Seed the database
-    deps:
-      - venv
-    cmd: |
-      if [ ! -f data/comp370.db ]; then
-        uv run scripts/python/seed.py
-      fi
-    silent: true
 
   run:
     desc: Run application
+    silent: true
     deps:
       - venv
     cmds:
       - uv run comp370
-    silent: true
 
   test:
     desc: Run tests
+    silent: true
     deps:
       - venv
-      - seed
+      - db:seed
     cmds:
       - uv run scripts/python/test.py
-    silent: true
 
   check:
     desc: Check Python code
+    silent: true
     deps:
       - venv
     cmds:
-      - ty check -q --error-on-warning .
-      - ruff check -q .
-    silent: true
+      - ty check --error-on-warning .
+      - ruff check .
 
   fix:
     desc: Fix Python code
+    silent: true
     deps:
       - venv
     cmds:
       - ruff check -q --fix .
-    silent: true
