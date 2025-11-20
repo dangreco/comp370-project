@@ -17,7 +17,7 @@ from comp370.gql import schema
 
 
 async def graphiql_redirect(request):
-    return RedirectResponse("/graphiql/index.html")
+    return RedirectResponse("/gql")
 
 
 def create_app():
@@ -33,13 +33,17 @@ def create_app():
     # Create Starlette application
     app = Starlette(
         routes=[
-            Mount("/graphql", graphql_app),
+            Route("/api/graphql", graphql_app),
+            Route("/api/graphql/", graphql_app),
             Mount(
-                "/graphiql",
-                StaticFiles(directory="public/graphiql"),
-                name="graphiql",
+                "/gql",
+                StaticFiles(
+                    directory="public/graphiql",
+                    html=True,
+                ),
+                name="gql",
             ),
-            Route("/graphiql", graphiql_redirect),
+            Route("/gql/", graphiql_redirect),
         ]
     )
 
@@ -56,6 +60,8 @@ def main():
         host="0.0.0.0",
         port=8000,
         log_level="info",
+        proxy_headers=True,
+        forwarded_allow_ips="*",
     )
 
 
