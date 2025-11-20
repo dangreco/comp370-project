@@ -23,7 +23,11 @@ class EpisodeService(Service):
                 for sibling in node.next_siblings:
                     if isinstance(sibling, NavigableString):
                         dialogue.append(sibling.strip())
-                    elif isinstance(sibling, Tag) and sibling.name == "b":
+                    elif (
+                        isinstance(sibling, Tag)
+                        and sibling.name == "b"
+                        and not sibling.text.strip()
+                    ):
                         break
                 dialogue = " ".join(dialogue)
                 dialogue = clean_dialogue(dialogue)
