@@ -1,0 +1,46 @@
+---
+# yaml-language-server: $schema=https://taskfile.dev/schema.json
+# yamllint disable rule:line-length
+version: "3"
+
+tasks:
+  clean:
+    desc: Cleanup database files
+    silent: true
+    cmds:
+      - rm -rf data
+
+  seed:
+    desc: Seed database with initial data
+    silent: true
+    vars:
+      DB_SEED_FORCE: false
+    cmd: |
+      if [[ {{.DB_SEED_FORCE}} = true || ! -f data/comp370.db ]]; then
+        task db:clean
+        uv run python scripts/python/seed.py
+      fi
+
+  extract:
+    desc: Extract workable data from database
+    silent: true
+    vars:
+      DB_EXTRACT_N: 5
+      DB_EXTRACT_L: 16
+    deps:
+      - seed
+    cmd: |
+      printf "Extracting side characters..."
+      mapfile -t characters < <(uv run scripts/python/extract_side_characters.py -n {{.DB_EXTRACT_N}} -l {{.DB_EXTRACT_L}} | tail -n +2)
+      printf "done\n"
+
+      mkdir -p data/lines
+
+      for character in "${characters[@]}"; do
+          character=$(echo "$character" | rev | cut -d' ' -f2- | rev | xargs)
+          id=$(echo "$character" | tr '[:upper:]' '[:lower:]' | tr ' ' '_')
+
+          printf "Extracting lines for $character..."
+          uv run scripts/python/extract_lines.py "$character" -l {{.DB_EXTRACT_L}} -o "data/lines/$id.tsv"
+          printf "done\n"
+      done

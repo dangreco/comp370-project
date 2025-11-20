@@ -7,6 +7,7 @@ includes:
   toml: ./tasks/toml.yml
   yaml: ./tasks/yaml.yml
   python: ./tasks/python.yml
+  db: ./tasks/db.yml
   docker:
     taskfile: ./tasks/container.yml
     vars:
@@ -19,62 +20,55 @@ includes:
 tasks:
   default:
     desc: List tasks
+    silent: true
     cmds:
       - task --list
-    silent: true
 
   clean:
     desc: Clean the project
+    silent: true
     deps:
       - latex:clean
     cmds: []
-    silent: true
 
   build:
     desc: Build the project
+    silent: true
     deps:
       - latex:build
     cmds: []
-    silent: true
 
   run:
     desc: Run the project
+    silent: true
     deps:
       - python:run
     cmds: []
-    silent: true
-
-  seed:
-    desc: Seed the database
-    cmds:
-      - rm -f data/comp370.db
-      - uv run python scripts/python/seed.py
-    silent: true
 
   test:
     desc: Test the project
+    silent: true
     deps:
       - latex:test
       - python:test
     cmds: []
-    silent: true
 
   check:
     desc: Check for linting/formatting errors
+    silent: true
     deps:
       - latex:check
       - toml:check
       - yaml:check
       - python:check
     cmds: []
-    silent: true
 
   fix:
     desc: Fix linting/formatting errors
+    silent: true
     deps:
       - latex:fix
       - toml:fix
       - yaml:fix
       - python:fix
     cmds: []
-    silent: true

@@ -5,13 +5,13 @@ version: "3"
 tasks:
   check:
     desc: Check TOML files
-    cmds:
-      - tombi lint . &> /dev/null
-      - tombi fmt --check . &> /dev/null
     silent: true
+    cmds:
+      - tombi lint .
+      - tombi fmt --check .
 
   fix:
     desc: Fix TOML files
+    silent: true
     cmds:
       - tombi fmt . &> /dev/null
-    silent: true

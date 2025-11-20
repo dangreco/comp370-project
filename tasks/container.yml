@@ -10,7 +10,6 @@ tasks:
     cmd: |
       mkdir -p .cache
       {{.RUNTIME}} build -f docker/Dockerfile -t {{.TAG}} .
-    silent: true
 
   run:
     desc: Run container
@@ -18,4 +17,3 @@ tasks:
       TAG: comp370:latest
     cmd: |
       {{.RUNTIME}} run --rm -it {{.TAG}}
-    silent: true
