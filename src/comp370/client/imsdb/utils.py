@@ -1,6 +1,7 @@
 import re
 from functools import reduce
 from bs4 import Tag
+from bs4 import NavigableString
 from typing import Any
 
 CHARACTER_BLACKLIST = [
@@ -21,19 +22,27 @@ CHARACTER_FILTERS = [
 CHARACTER_JOINS = [" AND ", "&", "+", "/", ","]
 
 
-def sub(pat: str, rep: str):
-    return lambda s: re.sub(pat, rep, s)
-
-
 def clean_dialogue(s: str) -> str:
     return reduce(
         lambda acc, f: f(acc),
         [
-            sub(r"\(.*\)", ""),  # actions/thoughts
-            sub(r"\s+", " "),  # extra whitespace
+            lambda x: re.sub(r"\(.*?\)", "", x),  # non-greedy parentheses removal
+            lambda x: re.sub(r"\s+", " ", x),  # extra whitespace
         ],
         s,
     ).strip()
+
+
+def extract_dialogue(title: str, siblings: Any) -> str:
+    parts = []
+    for sibling in siblings:
+        if is_character(title, sibling):
+            break
+        elif isinstance(sibling, NavigableString):
+            parts.append(sibling.strip())
+    dialogue = " ".join(parts)
+    dialogue = clean_dialogue(dialogue)
+    return dialogue
 
 
 def is_character(title: str, node: Any) -> bool:

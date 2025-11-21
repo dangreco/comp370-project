@@ -113,6 +113,7 @@
                   mkdir -p .zed || true
                   cp ${__zed}/settings.json .zed/settings.json || true
                   husky install > /dev/null 2>&1 || true
+                  uv sync
                 '';
               };
             build =
@@ -145,6 +146,8 @@
 
                 shellHook = ''
                   export "LD_LIBRARY_PATH=''$LD_LIBRARY_PATH:${libraryPath}"
+                  uv sync &> /dev/null
+                  uv run python3 -m nltk.downloader punkt_tab averaged_perceptron_tagger_eng &> /dev/null
                 '';
               };
           };

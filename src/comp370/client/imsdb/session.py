@@ -13,10 +13,6 @@ from comp370.constants import DIR_CACHE
 from comp370.utils import in_github_actions
 from .constants import BASE_URL
 
-REQUESTS_LOCK = threading.Lock()
-REQUESTS_LAST = None
-REQUESTS_DELAY = 1
-
 
 def cache_key(request: PreparedRequest, **kwargs) -> str:
     key = sha256()
@@ -41,9 +37,13 @@ class Session:
         self,
         base_url: str = BASE_URL,
         session: Session = CACHE,
+        rate: float = 0.25,
     ):
         self.base_url = base_url
         self.session = session
+        self.rate = rate
+        self.lock = threading.Lock()
+        self.last = None
 
     def _request(
         self,
@@ -52,31 +52,38 @@ class Session:
         headers: Optional[dict] = None,
         params: Optional[dict] = None,
         data: Optional[dict] = None,
+        retries: int = 5,
     ) -> tuple[BeautifulSoup, bool]:
-        global REQUESTS_LAST
-        with REQUESTS_LOCK:
-            if REQUESTS_LAST is not None:
-                elapsed = time.time() - REQUESTS_LAST
-                if elapsed < REQUESTS_DELAY:
-                    time.sleep(REQUESTS_DELAY - elapsed)
+        url = f"{self.base_url}/{path}"
 
-            url = f"{self.base_url}/{path}"
-            response = self.session.request(
-                method,
-                url,
-                params=params,
-                headers=headers,
-                data=data,
-            )
+        for attempt in range(retries):
+            try:
+                response = self.session.request(
+                    method,
+                    url,
+                    params=params,
+                    headers=headers,
+                    data=data,
+                )
 
-            # Only delay next request if this one was not cached
-            if not response.from_cache:
-                REQUESTS_LAST = time.time()
+                if not response.from_cache:
+                    with self.lock:
+                        if self.last is not None:
+                            elapsed = time.time() - self.last
+                            if elapsed < self.rate:
+                                time.sleep(self.rate - elapsed)
+                        self.last = time.time()
 
-            response.raise_for_status()
-            soup = BeautifulSoup(response.text, "html.parser")
+                response.raise_for_status()
+                soup = BeautifulSoup(response.text, "html.parser")
 
-        return soup, response.from_cache
+                return soup, response.from_cache
+            except Exception:
+                if attempt == retries - 1:
+                    raise
+                time.sleep(2**attempt)
+
+        raise RuntimeError("Max retries exceeded")
 
     def get(self, path: str, **kwargs) -> tuple[BeautifulSoup, bool]:
         return self._request("GET", path, **kwargs)

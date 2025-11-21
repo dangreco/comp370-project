@@ -151,6 +151,7 @@ class Character(Base):
         id: Primary key
         name: Character name (e.g., "Jerry Seinfeld")
         gender: Character gender (e.g., "male", "female")
+        popularity: Character popularity (e.g., 100, 1 being the most popular)
         occupation: Character occupation (e.g., "comedian", "actor")
         episodes: List of episodes this character appears in
         lines: All dialogue lines spoken by this character
@@ -162,6 +163,7 @@ class Character(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(nullable=False)
     gender: Mapped[str] = mapped_column(nullable=False)
+    popularity: Mapped[int] = mapped_column(nullable=False)
     occupation: Mapped[str] = mapped_column(nullable=False)
 
     episodes: Mapped[List["Episode"]] = relationship(

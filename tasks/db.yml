@@ -13,10 +13,8 @@ tasks:
   seed:
     desc: Seed database with initial data
     silent: true
-    vars:
-      DB_SEED_FORCE: false
     cmd: |
-      if [[ {{.DB_SEED_FORCE}} = true || ! -f data/comp370.db ]]; then
+      if [[ "{{.DB_SEED_FORCE}}" = true || ! -f data/comp370.db ]]; then
         task db:clean
         uv run python scripts/python/seed.py
       fi

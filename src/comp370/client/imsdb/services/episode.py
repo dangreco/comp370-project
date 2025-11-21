@@ -1,9 +1,8 @@
-from bs4 import Tag
-from bs4 import NavigableString
+import re
 
 from .__service__ import Service
 from ..models import Line
-from ..utils import clean_dialogue, is_character, split_characters
+from ..utils import extract_dialogue, is_character, split_characters
 
 
 class EpisodeService(Service):
@@ -18,19 +17,7 @@ class EpisodeService(Service):
         for node in pre.descendants:
             if is_character(title, node):
                 number = len(lines) + 1
-
-                dialogue = []
-                for sibling in node.next_siblings:
-                    if isinstance(sibling, NavigableString):
-                        dialogue.append(sibling.strip())
-                    elif (
-                        isinstance(sibling, Tag)
-                        and sibling.name == "b"
-                        and not sibling.text.strip()
-                    ):
-                        break
-                dialogue = " ".join(dialogue)
-                dialogue = clean_dialogue(dialogue)
+                dialogue = extract_dialogue(title, node.next_siblings)
 
                 character = node.text.strip()
                 for character in split_characters(character):
@@ -44,6 +31,12 @@ class EpisodeService(Service):
                             continue
 
                         character = line.character  # type:ignore
+
+                    dialogue = re.sub(r"\(.*\)", "", dialogue)
+                    dialogue = re.sub(r"\s+", " ", dialogue)
+
+                    if dialogue == "":
+                        continue
 
                     lines.append(
                         Line(

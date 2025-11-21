@@ -117,3 +117,15 @@ class CharacterService(Service):
             portrayed_by=actors,
             episode=episode,
         )
+
+    def get_out_paths(self, path: str) -> list[str]:
+        soup, cached = self.session.get(path)
+
+        paths = set()
+        for a in soup.find_all("a"):
+            if a.has_attr("href"):
+                href = a["href"]
+                if href.startswith("/wiki"):
+                    paths.add(href)
+
+        return list(paths)
