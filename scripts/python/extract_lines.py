@@ -2,6 +2,7 @@ import signal
 import argparse
 import pandas as pd
 from sqlalchemy import func
+from typing import Optional
 
 
 from comp370.db import Client as Db
@@ -13,7 +14,7 @@ from comp370.db import Line
 signal.signal(signal.SIGPIPE, signal.SIG_DFL)
 
 
-def extract(character: str, length: int) -> pd.DataFrame:
+def extract(character: str, length: int, n: Optional[int] = None) -> pd.DataFrame:
     with Db().session() as db:
         query = (
             db.query(
@@ -32,7 +33,15 @@ def extract(character: str, length: int) -> pd.DataFrame:
         )
 
         result = query.all()
-        return pd.DataFrame(result, columns=["season", "episode", "number", "dialogue"])
+        df = pd.DataFrame(result, columns=["season", "episode", "number", "dialogue"])
+
+        if n is None:
+            return df
+
+        if n <= len(df):
+            return df.sample(n=n, replace=False, random_state=None)
+
+        return df.sample(frac=1, random_state=None)
 
 
 def main():
@@ -52,9 +61,16 @@ def main():
         default=None,
         help="Output file name",
     )
+    parser.add_argument(
+        "-n",
+        "--num-lines",
+        type=int,
+        default=None,
+        help="Number of lines to sample",
+    )
     args = parser.parse_args()
 
-    df = extract(args.character, args.length)
+    df = extract(args.character, args.length, args.num_lines)
     if args.output:
         df.to_csv(args.output, index=False, sep="\t")
     else:
