@@ -3,7 +3,7 @@ FROM ghcr.io/astral-sh/uv:alpine
 COPY .cache/ /app/.cache/
 COPY src /app/src
 COPY public /app/public
-COPY scripts/python/seed.py /app/scripts/python/seed.py
+COPY scripts/python/db/seed.py /app/scripts/python/db/seed.py
 COPY pyproject.toml /app/pyproject.toml
 COPY uv.lock /app/uv.lock
 COPY README.md /app/README.md
@@ -16,7 +16,7 @@ RUN uv sync --frozen
 RUN uv run python3 -m nltk.downloader punkt_tab averaged_perceptron_tagger_eng
 
 # Seed database
-RUN uv run python scripts/python/seed.py -n 1
+RUN uv run python scripts/python/db/seed.py -n 1
 RUN rm -rf .cache
 
 # Expose port 8000 for the API
