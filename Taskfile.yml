@@ -8,6 +8,7 @@ includes:
   yaml: ./tasks/yaml.yml
   python: ./tasks/python.yml
   db: ./tasks/db.yml
+  data: ./tasks/data.yml
   docker:
     taskfile: ./tasks/container.yml
     vars:

@@ -1,0 +1,73 @@
+---
+# yaml-language-server: $schema=https://taskfile.dev/schema.json
+# yamllint disable rule:line-length
+version: "3"
+includes:
+  db: ./db.yml
+tasks:
+  clean:
+    desc: Cleanup data files
+    summary: |
+      Remove all generated data files in the data/ directory.
+    silent: true
+    prompt:
+      - Are you sure you want to delete all data files in the data/ directory?
+    cmds:
+      - rm -rf data/lines
+      - rm -rf data/charaters.side.tsv
+
+  extract:
+    desc: Extract workable data from database
+    summary: |
+      Extract side characters and their lines from the seeded database.
+      This task depends on the seed task to ensure the database is populated before extraction.
+    silent: true
+    deps:
+      - db:seed
+    sources:
+      - data/comp370.db
+    generates:
+      - data/characters.side.tsv
+      - data/lines/extracted/*.tsv
+      - tasks/data.yml
+    cmd: |
+      uv run python scripts/python/data/extract.py \
+        -n {{.NUM_CHARACTERS | default 5}} \
+        -l {{.MINIMUM_LENGTH | default 15}}
+
+  sample:
+    desc: Sample lines from workable data
+    summary: |
+      Sample lines for annotation from the extracted data.
+      This task depends on the extract task to ensure the data is available before sampling.
+    silent: true
+    deps:
+      - extract
+    sources:
+      - data/characters.side.tsv
+      - data/lines/extracted/*.tsv
+      - tasks/data.yml
+    generates:
+      - data/lines/sampled/*.tsv
+    cmd: |
+      uv run python scripts/python/data/sample.py \
+        -n {{.NUM | default 1}}
+
+  annotate:
+    desc: Annotate sampled lines
+    summary: |
+      Annotate the sampled lines using human input or an LLM.
+      This task depends on the sample task to ensure the sampled data is available before annotation.
+    silent: true
+    deps:
+      - sample
+    sources:
+      - data/lines/sampled/*.tsv
+      - tasks/data.yml
+    status:
+      - test -f data/lines/annotated/{{.ANNOTATOR | default "human"}}/anchor
+    cmd: |
+      uv run python scripts/python/data/annotate.py \
+        --annotator {{.ANNOTATOR | default "human"}} \
+        --model {{.MODEL | default "foobar"}} \
+        --codebook {{.CODEBOOK | default "dan"}}

@@ -26,9 +26,8 @@ tasks:
   test:
     desc: Test LaTeX document
     silent: true
-    deps:
-      - build
-    cmds: []
+    cmds:
+      - scripts/latex/test.sh docs/report/report.en.tex
 
   check:
     desc: Check LaTeX document

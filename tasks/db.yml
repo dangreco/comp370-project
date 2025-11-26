@@ -6,64 +6,26 @@ version: "3"
 tasks:
   clean:
     desc: Cleanup database files
+    summary: |
+      Remove all generated database files in the data/ directory.
+      Use this task to reset the database state before seeding it again.
     silent: true
+    prompt:
+      - Are you sure you want to delete all database files in the data/ directory?
     cmds:
       - rm -rf data
 
   seed:
     desc: Seed database with initial data
+    summary: |
+      Generate and seed the database by scraping the required data sources.
+      This task depends on the clean task to ensure a fresh state before seeding.
+      This task is long-running -- expect several minutes to complete.
     silent: true
-    cmd: |
-      if [[ "{{.DB_SEED_FORCE}}" = true || ! -f data/comp370.db ]]; then
-        task db:clean
-        uv run python scripts/python/seed.py
-      fi
-
-  extract:
-    desc: Extract workable data from database
-    silent: true
-    vars:
-      DB_EXTRACT_NUM_CHARACTERS: 5
-      DB_EXTRACT_LEN_MINIMUM: 16
-    deps:
-      - seed
-    cmd: |
-      printf "Extracting side characters..."
-      mapfile -t characters < <(uv run scripts/python/extract_side_characters.py -n {{.DB_EXTRACT_NUM_CHARACTERS}} -l {{.DB_EXTRACT_LEN_MINIMUM}} | tail -n +2)
-      printf "done\n"
-
-      mkdir -p data/lines
-
-      for character in "${characters[@]}"; do
-          character=$(echo "$character" | rev | cut -d' ' -f2- | rev | xargs)
-          id=$(echo "$character" | tr '[:upper:]' '[:lower:]' | tr ' ' '_')
-
-          printf "Extracting lines for $character..."
-          uv run scripts/python/extract_lines.py "$character" -l {{.DB_EXTRACT_LEN_MINIMUM}} -o "data/lines/$id.tsv"
-          printf "done\n"
-      done
-
-  sample:
-    desc: Sample workable data from database
-    silent: true
-    vars:
-      DB_EXTRACT_NUM_CHARACTERS: 5
-      DB_EXTRACT_LEN_MINIMUM: 16
-      DB_EXTRACT_NUM_SAMPLE: 100
-    deps:
-      - seed
-    cmd: |
-      printf "Extracting side characters..."
-      mapfile -t characters < <(uv run scripts/python/extract_side_characters.py -n {{.DB_EXTRACT_NUM_CHARACTERS}} -l {{.DB_EXTRACT_LEN_MINIMUM}} | tail -n +2)
-      printf "done\n"
-
-      mkdir -p data/lines
-
-      for character in "${characters[@]}"; do
-          character=$(echo "$character" | rev | cut -d' ' -f2- | rev | xargs)
-          id=$(echo "$character" | tr '[:upper:]' '[:lower:]' | tr ' ' '_')
-
-          printf "Sampling {{.DB_EXTRACT_NUM_SAMPLE}} lines for $character..."
-          uv run scripts/python/extract_lines.py "$character" -l {{.DB_EXTRACT_LEN_MINIMUM}} -o "data/lines/$id.sampled.{{.DB_EXTRACT_NUM_SAMPLE}}.tsv" -n {{.DB_EXTRACT_NUM_SAMPLE}}
-          printf "done\n"
-      done
+    generates:
+      - data/comp370.db
+    status:
+      - test -f data/comp370.db
+    cmds:
+      - task db:clean --yes
+      - uv run python scripts/python/db/seed.py

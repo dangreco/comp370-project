@@ -1,7 +1,8 @@
 ---
 # yaml-language-server: $schema=https://taskfile.dev/schema.json
 version: "3"
-
+includes:
+  db: ./db.yml
 tasks:
   venv:
     desc: Initialize the virtual environment

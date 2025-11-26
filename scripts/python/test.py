@@ -41,7 +41,7 @@ def main():
     }
     """
 
-    response = client.post("/graphql", json={"query": query})
+    response = client.post("/api/graphql", json={"query": query})
     assert response.status_code == 200
     data = response.json()
 
