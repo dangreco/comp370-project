@@ -101,6 +101,7 @@
                     p: with p; [
                       latexmk
                       chktex
+                      courier
                     ]
                   ))
                   tex-fmt
