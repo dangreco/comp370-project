@@ -23,7 +23,7 @@ DIR_SRC=$(dirname "$SRC")
 cp -r "$DIR_SRC"/* "$tmp"
 
 # Build LaTeX document
-(cd "$tmp" && latexmk -pdf "$(basename "$SRC")")
+(cd "$tmp" && latexmk -C "$(basename "$SRC")" && latexmk -f -pdf "$(basename "$SRC")")
 
 # Copy to build directory
 mkdir -p "$DIR_BLD"

@@ -1,0 +1,34 @@
+---
+# yaml-language-server: $schema=https://taskfile.dev/schema.json
+# yamllint disable rule:line-length
+version: "3"
+tasks:
+  clean:
+    desc: Cleanup annotation files
+    silent: true
+    prompt:
+      - Are you sure you want to delete all annotation files in the data/ directory?
+    cmds:
+      - rm -rf data/annotations
+
+  get:
+    desc: Retrieve annotations from Label Studio
+    silent: true
+    generates:
+      - data/annotations/annotations.all.csv
+    status:
+      - test -f data/annotations/annotations.all.csv
+    cmds:
+      - uv run python scripts/python/annotations/get.py
+
+  process:
+    desc: Process annotations from Label Studio
+    silent: true
+    deps:
+      - get
+    sources:
+      - data/annotations/annotations.all.csv
+    generates:
+      - data/annotations/annotations.derived.csv
+    cmds:
+      - uv run python scripts/python/annotations/process.py

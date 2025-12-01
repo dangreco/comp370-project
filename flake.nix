@@ -24,6 +24,17 @@
           devShells = {
             default =
               let
+                latex = (
+                  pkgs.texliveSmall.withPackages (
+                    ps: with ps; [
+                      latexmk
+                      chktex
+                      courier
+                      algorithms
+                      latexindent
+                    ]
+                  )
+                );
                 __zed = pkgs.writeTextFile {
                   name = "__zed";
                   text = builtins.toJSON {
@@ -32,6 +43,19 @@
                         binary = {
                           path = "${pkgs.ty}/bin/ty";
                           arguments = [ "server" ];
+                        };
+                      };
+                      texlab = {
+                        path = "${pkgs.texlab}/bin/texlab";
+                        settings.texlab.build = {
+                          executable = "${latex}/bin/latexmk";
+                          args = [
+                            "-pdf"
+                            "-interaction=nonstopmode"
+                            "-synctex=1"
+                            "%f"
+                          ];
+                          onSave = false;
                         };
                       };
                     };
@@ -51,6 +75,14 @@
                               "--stdin-filename"
                               "{buffer_path}"
                             ];
+                          };
+                        };
+                      };
+                      LaTeX = {
+                        formatter = {
+                          external = {
+                            command = "${pkgs.tex-fmt}/bin/tex-fmt";
+                            arguments = [ "--stdin" ];
                           };
                         };
                       };
@@ -94,16 +126,17 @@
                   uv
                   ty
                   ruff
-                  python313
-
-                  # LaTeX
-                  (texliveSmall.withPackages (
-                    p: with p; [
-                      latexmk
-                      chktex
-                      courier
+                  (python313.withPackages (
+                    ps: with ps; [
+                      spacy-models.en_core_web_sm
                     ]
                   ))
+
+                  # LaTeX
+                  perl
+                  latex
+
+                  texlab
                   tex-fmt
                   zathura
                 ];

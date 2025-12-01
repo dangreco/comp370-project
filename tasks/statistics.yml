@@ -1,0 +1,38 @@
+---
+# yaml-language-server: $schema=https://taskfile.dev/schema.json
+# yamllint disable rule:line-length
+version: "3"
+includes:
+  annotations: ./annotations.yml
+tasks:
+  clean:
+    desc: Cleanup statistics files
+    silent: true
+    prompt:
+      - Are you sure you want to delete all statistics files in the data/ directory?
+    cmds:
+      - rm -rf data/statistics
+
+  tf-idf:
+    desc: Compute TF-IDF for annotated dialogue
+    silent: true
+    deps:
+      - annotations:process
+    cmds:
+      - uv run python scripts/python/statistics/idf.py
+
+  topics:
+    desc: Compute per-character topics
+    silent: true
+    deps:
+      - annotations:process
+    cmds:
+      - uv run python scripts/python/statistics/topics.py
+
+  dashboard:
+    desc: View per-character topics stats dashboard
+    silent: true
+    deps:
+      - annotations:process
+    cmds:
+      - uv run python scripts/python/statistics/dashboard.py

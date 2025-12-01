@@ -9,6 +9,8 @@ includes:
   python: ./tasks/python.yml
   db: ./tasks/db.yml
   data: ./tasks/data.yml
+  annotations: ./tasks/annotations.yml
+  statistics: ./tasks/statistics.yml
   docker:
     taskfile: ./tasks/container.yml
     vars:

@@ -14,6 +14,7 @@ pid_viewer=""
 # Start latexmk in its own process group
 (
     cd "$(dirname "$src")"
+    latexmk -C "$(basename "$SRC")"
     exec latexmk -pdf -pvc -synctex=1 -outdir="$tmp" -view=none "$(basename "$src")"
 ) &
 pid_latex=$!
