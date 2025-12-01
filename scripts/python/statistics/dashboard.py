@@ -78,18 +78,7 @@ def create_download_buttons():
         )
     )
 
-    button_e = Button(label="GraphQL Playground", button_type="primary", width=200)
-    button_e.js_on_click(
-        CustomJS(
-            code="""
-        const link = document.createElement('a');
-        link.href = '/gql';
-        link.click();
-    """
-        )
-    )
-
-    return row(button_e, button_a, button_b, button_c, button_d, sizing_mode="fixed")
+    return column(button_a, button_b, button_c, button_d, sizing_mode="fixed")
 
 
 def create_stacked_bar_chart(df, title="Character Dialogue by Topic"):
@@ -335,8 +324,8 @@ def create_dashboard(df):
     # Title
     title_div = Div(
         text="""
-    <h1 style="text-align: center; color: #333;">Seinfeld Character Dialogue Explorer</h1>
-    <p style="text-align: center; font-size: 14px; color: #666;">
+    <h1 style="color: #333; margin-bottom: 0px;">Seinfeld Side Characters</h1>
+    <p style="font-size: 14px; color: #666;">
         Explore dialogue patterns across characters, seasons, and topics
     </p>
     """,
@@ -362,14 +351,29 @@ def create_dashboard(df):
 
     season_tabs = Tabs(tabs=season_charts)
 
+    button_gql = Button(label="GraphQL Playground", button_type="primary", width=200)
+    button_gql.js_on_click(
+        CustomJS(
+            code="""
+        const link = document.createElement('a');
+        link.href = '/gql';
+        link.click();
+    """
+        )
+    )
+
     # Layout
     dashboard_layout = column(
-        download_buttons,
+        button_gql,
         title_div,
+        Div(text="<h3>Character Dialogue By Topic</h3>", width=900),
         stacked_bars,
+        Div(text="<h3>Character-Topic Heatmap</h3>", width=900),
         heatmap,
         Div(text="<h3>Season Evolution by Character</h3>", width=900),
         season_tabs,
+        Div(text="<h3>Downloads</h3>", width=900),
+        download_buttons,
         sizing_mode="scale_width",
     )
 

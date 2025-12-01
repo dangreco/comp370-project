@@ -38,7 +38,5 @@ tasks:
     silent: true
     deps:
       - annotations:process
-    status:
-      - test -f data/statistics/statistics.topics.html
     cmds:
       - uv run python scripts/python/statistics/dashboard.py
