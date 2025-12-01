@@ -18,22 +18,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4.3.0
 
-      - name: Cache requests databases
-        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
-        with:
-          path: .cache
-          key: requests-cache-${{ steps.date.outputs.month }}
-          restore-keys: |
-            requests-cache-
-
-      - name: Install Nix
-        uses: DeterminateSystems/determinate-nix-action@9596b92e70cbf68a494a2b0273cb5b680184f5fc # v3.13.1
-
-      - name: Setup Nix cache
-        uses: DeterminateSystems/magic-nix-cache-action@565684385bcd71bad329742eefe8d12f2e765b39 # v13
-        with:
-          use-flakehub: false
-
       - name: Log in to GitHub Container Registry
         uses: docker/login-action@465a07811f14bebb1938fbed4728c6a1ff8901fc # v2.2.0
         with:
@@ -44,7 +28,7 @@ jobs:
       - name: Build and push Docker image
         run: |
           set -e
-          nix develop .#build --command task docker:build
+          docker build -f docker/Dockerfile -t comp370:latest .
           IMAGE=ghcr.io/$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')/comp370-project:latest
           docker tag comp370:latest "$IMAGE"
           docker push "$IMAGE"

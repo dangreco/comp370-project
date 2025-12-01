@@ -6,7 +6,7 @@ Visualize character dialogue patterns across seasons and topics using Bokeh
 
 import pandas as pd
 from bokeh.plotting import figure, output_file, save
-from bokeh.layouts import column, row
+from bokeh.layouts import column
 from bokeh.models import (
     ColumnDataSource,
     HoverTool,
