@@ -18,6 +18,8 @@ tasks:
     silent: true
     deps:
       - annotations:process
+    status:
+      - test -f data/statistics/statistics.tfidf.csv
     cmds:
       - uv run python scripts/python/statistics/idf.py
 
@@ -26,6 +28,8 @@ tasks:
     silent: true
     deps:
       - annotations:process
+    status:
+      - test -f data/statistics/statistics.topics.csv
     cmds:
       - uv run python scripts/python/statistics/topics.py
 
@@ -34,5 +38,7 @@ tasks:
     silent: true
     deps:
       - annotations:process
+    status:
+      - test -f data/statistics/statistics.topics.html
     cmds:
       - uv run python scripts/python/statistics/dashboard.py

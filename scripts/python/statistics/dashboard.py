@@ -5,14 +5,16 @@ Visualize character dialogue patterns across seasons and topics using Bokeh
 """
 
 import pandas as pd
-from bokeh.plotting import figure, output_file, show, save
-from bokeh.layouts import column
+from bokeh.plotting import figure, output_file, save
+from bokeh.layouts import column, row
 from bokeh.models import (
     ColumnDataSource,
     HoverTool,
     Tabs,
     TabPanel,
     Div,
+    Button,
+    CustomJS,
 )
 from bokeh.palettes import Category10_8
 
@@ -23,6 +25,71 @@ def load_data(filepath):
     """Load the CSV data"""
     df = pd.read_csv(filepath)
     return df
+
+
+def create_download_buttons():
+    button_a = Button(label="Download comp370.db", button_type="default", width=200)
+    button_a.js_on_click(
+        CustomJS(
+            code="""
+        const link = document.createElement('a');
+        link.href = '/download/db';
+        link.click();
+    """
+        )
+    )
+
+    button_b = Button(
+        label="Download comp370.tf-idf.csv", button_type="default", width=200
+    )
+    button_b.js_on_click(
+        CustomJS(
+            code="""
+        const link = document.createElement('a');
+        link.href = '/download/tf-idf';
+        link.click();
+    """
+        )
+    )
+
+    button_c = Button(
+        label="Download comp370.topics.csv", button_type="default", width=200
+    )
+    button_c.js_on_click(
+        CustomJS(
+            code="""
+        const link = document.createElement('a');
+        link.href = '/download/topics';
+        link.click();
+    """
+        )
+    )
+
+    button_d = Button(
+        label="Download comp370.annotations.csv", button_type="default", width=200
+    )
+    button_d.js_on_click(
+        CustomJS(
+            code="""
+        const link = document.createElement('a');
+        link.href = '/download/annotations';
+        link.click();
+    """
+        )
+    )
+
+    button_e = Button(label="GraphQL Playground", button_type="primary", width=200)
+    button_e.js_on_click(
+        CustomJS(
+            code="""
+        const link = document.createElement('a');
+        link.href = '/gql';
+        link.click();
+    """
+        )
+    )
+
+    return row(button_e, button_a, button_b, button_c, button_d, sizing_mode="fixed")
 
 
 def create_stacked_bar_chart(df, title="Character Dialogue by Topic"):
@@ -276,6 +343,9 @@ def create_dashboard(df):
         width=900,
     )
 
+    # Create download buttons
+    download_buttons = create_download_buttons()
+
     # Create visualizations
     stacked_bars = create_stacked_bar_chart(df)
     heatmap = create_character_heatmap(df)
@@ -294,6 +364,7 @@ def create_dashboard(df):
 
     # Layout
     dashboard_layout = column(
+        download_buttons,
         title_div,
         stacked_bars,
         heatmap,
@@ -320,10 +391,6 @@ def main():
     # Output to HTML file
     output_file(DIR_DATA / "statistics" / "statistics.topics.html")
     save(dashboard)
-
-    print("\nDashboard created successfully!")
-    print("Opening in browser...")
-    show(dashboard)
 
 
 if __name__ == "__main__":

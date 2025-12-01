@@ -1,6 +1,7 @@
 /.direnv
 /.zed
 /data
+/cache
 /.gitignore
 /.task
 

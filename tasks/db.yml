@@ -13,7 +13,7 @@ tasks:
     prompt:
       - Are you sure you want to delete all database files in the data/ directory?
     cmds:
-      - rm -rf data
+      - rm -rf data/**/*
 
   seed:
     desc: Seed database with initial data

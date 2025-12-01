@@ -29,7 +29,6 @@ tasks:
     generates:
       - data/characters.side.tsv
       - data/lines/extracted/*.tsv
-      - tasks/data.yml
     cmd: |
       uv run python scripts/python/data/extract.py \
         -n {{.NUM_CHARACTERS | default 5}} \
@@ -46,7 +45,6 @@ tasks:
     sources:
       - data/characters.side.tsv
       - data/lines/extracted/*.tsv
-      - tasks/data.yml
     generates:
       - data/lines/sampled/*.tsv
     cmd: |
@@ -63,7 +61,6 @@ tasks:
       - sample
     sources:
       - data/lines/sampled/*.tsv
-      - tasks/data.yml
     status:
       - test -f data/lines/annotated/{{.ANNOTATOR | default "human"}}/anchor
     cmd: |

@@ -16,7 +16,7 @@ DIR_ROOT = Path(files(__package__)).parent.parent
 DIR_DATA = DIR_ROOT / "data"
 
 # Cache directory for storing cached data
-DIR_CACHE = DIR_ROOT / ".cache"
+DIR_CACHE = DIR_ROOT / "cache"
 
 # Ensure all required directories exist
 for dir in [DIR_DATA, DIR_CACHE]:

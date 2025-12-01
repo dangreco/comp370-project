@@ -12,15 +12,15 @@ import pandas as pd
 import numpy as np
 import contractions
 from sqlalchemy import select
-import spacy
 
+from comp370.nlp import SpaCy
 from comp370.db import Client as Db
 from comp370.db.models import Line
 from comp370.db.models import Season
 from comp370.db.models import Episode
 from comp370.constants import DIR_DATA
 
-nlp = spacy.load("en_core_web_sm")
+nlp = SpaCy.load("en_core_web_sm")
 
 
 def expand(text):

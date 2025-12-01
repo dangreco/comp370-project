@@ -1,10 +1,11 @@
 import re
-import nltk
 import jellyfish
 from typing import Optional
 from typing import Callable
 from functools import lru_cache
 from dataclasses import dataclass
+
+from comp370.nlp import NLTK
 from comp370.client.fandom.models import Character as FCharacter
 from .constants import COMMON_NAMES, TITLES, SUFFIXES
 
@@ -116,8 +117,8 @@ class Name:
                 break
 
         # Remove non-name tags
-        tokens = nltk.word_tokenize(name)
-        tags = list(nltk.pos_tag(tokens))
+        tokens = NLTK.word_tokenize(name)
+        tags = list(NLTK.pos_tag(tokens))
         ok = ["NN", "NNP", "JJ"]
 
         # Remove junk
@@ -127,7 +128,7 @@ class Name:
             tags.pop(0)
 
         # Re-do tags
-        tags = list(nltk.pos_tag(list(map(lambda x: x[0], tags))))
+        tags = list(NLTK.pos_tag(list(map(lambda x: x[0], tags))))
         possible = []
         for word, tag in tags:
             if tag in ok:
