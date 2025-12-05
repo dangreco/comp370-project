@@ -1,106 +1,655 @@
-\documentclass[letterpaper]{article} % DO NOT CHANGE THIS
-\usepackage{aaai24}  % DO NOT CHANGE THIS
-\usepackage{times}  % DO NOT CHANGE THIS
-\usepackage{helvet}  % DO NOT CHANGE THIS
-\usepackage{courier}  % DO NOT CHANGE THIS
-\usepackage[hyphens]{url}  % DO NOT CHANGE THIS
-\usepackage{graphicx} % DO NOT CHANGE THIS
-\urlstyle{rm} % DO NOT CHANGE THIS
-\def\UrlFont{\rm}  % DO NOT CHANGE THIS
-\usepackage{natbib}  % DO NOT CHANGE THIS AND DO NOT ADD ANY OPTIONS TO IT
-\usepackage{caption} % DO NOT CHANGE THIS AND DO NOT ADD ANY OPTIONS TO IT
-\frenchspacing  % DO NOT CHANGE THIS
-\setlength{\pdfpagewidth}{8.5in}  % DO NOT CHANGE THIS
-\setlength{\pdfpageheight}{11in}  % DO NOT CHANGE THIS
-
+%File: formatting-instruction.tex
+\documentclass[letterpaper]{article}
+\usepackage{aaai24}
+\usepackage{times}
+\usepackage{helvet}
+\usepackage{courier}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{url}
+\usepackage[backend=biber]{biblatex}
+\addbibresource{refs.bib}
+\frenchspacing
+\setlength{\pdfpagewidth}{8.5in}
+\setlength{\pdfpageheight}{11in}
 \pdfinfo{
-  /TemplateVersion (2024.1)
-}
-
-% DISALLOWED PACKAGES
-% \usepackage{authblk} -- This package is specifically forbidden
-% \usepackage{balance} -- This package is specifically forbidden
-% \usepackage{color (if used in text)
-% \usepackage{CJK} -- This package is specifically forbidden
-% \usepackage{float} -- This package is specifically forbidden
-% \usepackage{flushend} -- This package is specifically forbidden
-% \usepackage{fontenc} -- This package is specifically forbidden
-% \usepackage{fullpage} -- This package is specifically forbidden
-% \usepackage{geometry} -- This package is specifically forbidden
-% \usepackage{grffile} -- This package is specifically forbidden
-% \usepackage{hyperref} -- This package is specifically forbidden
-% \usepackage{navigator} -- This package is specifically forbidden
-% (or any other package that embeds links such as navigator or hyperref)
-% \indentfirst} -- This package is specifically forbidden
-% \layout} -- This package is specifically forbidden
-% \multicol} -- This package is specifically forbidden
-% \nameref} -- This package is specifically forbidden
-% \usepackage{savetrees} -- This package is specifically forbidden
-% \usepackage{setspace} -- This package is specifically forbidden
-% \usepackage{stfloats} -- This package is specifically forbidden
-% \usepackage{tabu} -- This package is specifically forbidden
-% \usepackage{titlesec} -- This package is specifically forbidden
-% \usepackage{tocbibind} -- This package is specifically forbidden
-% \usepackage{ulem} -- This package is specifically forbidden
-% \usepackage{wrapfig} -- This package is specifically forbidden
-% DISALLOWED COMMANDS
-% \nocopyright -- Your paper will not be published if you use this command
-% \addtolength -- This command may not be used
-% \balance -- This command may not be used
-% \baselinestretch -- Your paper will not be published if you use this command
-% \clearpage -- No page breaks of any kind may be used for the final
-% version of your paper
-% \columnsep -- This command may not be used
-% \newpage -- No page breaks of any kind may be used for the final
-% version of your paper
-% \pagebreak -- No page breaks of any kind may be used for the final
-% version of your paperr
-% \pagestyle -- This command may not be used
-% \tiny -- This is not an acceptable font size.
-% \vspace{- -- No negative value may be used in proximity of a
-% caption, figure, table, section, subsection, subsubsection, or reference
-% \vskip{- -- No negative value may be used to alter spacing above or
-% below a caption, figure, table, section, subsection, subsubsection,
-% or reference
-
-\setcounter{secnumdepth}{0} %May be changed to 1 or 2 if section
-% numbers are desired.
-
-\title{Todo}
-\author{
-  Daniel Greco\equalcontrib,
-  Kejun Fang\equalcontrib,
-  Denis Tsariov\equalcontrib,
-}
-
+  /Title (COMP 370 Final Project)
+/Author (Daniel Greco, Denis Tsariov, Kejun Fang)}
+\setcounter{secnumdepth}{0}
 \begin{document}
-
+% The file aaai.sty is the style file for AAAI Press
+% proceedings, working notes, and technical reports.
+%
+\title{Speaking of Seinfeld: \\ Dialogue Analysis of Side Characters
+in \textit{Seinfeld}}
+\author{Daniel Greco, Denis Tsariov, Kejun Fang\thanks{Code and data
+available at: \protect\url{https://github.com/dangreco/comp370-project}}}
 \maketitle
 
+% ===============================
+% INTRODUCTION
+% ===============================
 \section{Introduction}
 
-Todo
+\par
+Television sitcoms offer a rich corpus for studying character
+development and dialogue patterns. Side characters, though appearing
+less frequently than protagonists, often serve crucial narrative
+functions and exhibit distinctive speech patterns that contribute to
+a show's comedic identity. Understanding how these characters
+communicate and what topics they discuss can provide insights into
+both character design and audience engagement.
 
+\subsection{Research Questions}
+
+\par
+In this study, we analyze the dialogue of side characters in the NBC
+sitcom \textit{Seinfeld} (1989-1998), a show renowned for its observational
+humor and ensemble cast. Specifically, we investigate two research
+questions:
+
+\begin{itemize}
+  \item \textbf{RQ1}: What topics do side characters tend to talk about?
+  \item \textbf{RQ2}: How much attention does each character give to
+    each topic?
+\end{itemize}
+
+\noindent
+By answering these questions, we aim to characterize the thematic focus
+of individual side characters and identify patterns in their dialogue.
+
+\subsection{Approach}
+
+\par
+We collected scripts from 176 episodes and focused our analysis on
+five prominent side characters: Frank Costanza, Helen Seinfeld, Morty
+Seinfeld, Newman, and Susan Ross. Through open coding, we developed
+an eight-category typology for classifying dialogue topics, then
+manually annotated over 2,000 lines of dialogue. We supplemented
+human annotation with LLM-based classification to resolve
+disagreements and validate our results. Our analysis reveals distinct
+topical profiles for each character, reflecting their narrative roles
+and relationships with the main cast.
+
+\subsection{Key Findings}
+
+\par
+By quantifying topic engagement, our analysis revealed three core findings:
+
+\subsubsection{1.}
+\par
+The results confirm thematic specialization as character definition.
+Morty Seinfeld embodies the ``provider/hustler'' archetype, exhibiting
+a unique specialization in Money, which constitutes nearly 15\% of
+his lines; Frank Costanza functions as an ``agent of chaos,'' and his
+dialogue is co-dominated by Emotion/Feeling (24.3\%) and Food,
+reflecting his high volatility. Furthermore, Newman is the only
+character whose most dominant topics include both Food and Work,
+which is consistent with his role as a mailman and frequent snacker.
+
+\subsubsection{2.}
+\par
+Our analysis distinguishes narrative roles: drivers vs. reactors.
+Susan Ross's dialogue is heavily weighted toward Relationships, aimed
+at advancing the romantic (and later tragic) plotline; conversely,
+Helen Seinfeld acts as a ``narrative stabilizer,'' whose thematic
+distribution is more balanced, lacking sharp topical spikes, and
+primarily reacting to the obsessions of others.
+
+\subsubsection{3.}
+\par
+TF-IDF analysis emphasizes the self-referential nature of ``Culture''.
+Culture and Health topics are not anchored in general pop culture but
+are deeply rooted in specific \textit{Seinfeld} show-lore, such as
+``Festivus`` and Frank Costanza’s ''Serenity Now'' mantra, highlighting
+the insular nature of the show's universe.
+
+\subsection{Report Structure}
+\par
+The remainder of this report is structured as follows. Section 2
+systematically introduces the dataset construction process, including
+data collection methods and associated design decisions. Section 3
+presents the methods, including topic system construction, data
+annotation procedures, and topic characterization analysis. Section 4
+presents all results, sharing all findings, including the topics
+selected with their definitions, topic characterization, and topic
+engagement analysis. Section 5 is the Discussion, interpreting the
+significance and implications of the results.
+
+% ===============================
+% DATA
+% ===============================
 \section{Data}
 
-Todo
+\par
+Our dataset was constructed by scraping episode scripts from the
+Internet Movie Script Database (IMSDb) \cite{imsdb} and character
+metadata from the Seinfeld Fandom Wiki \cite{seinfeldwiki}. The result of the
+scraping pipeline is 176 \textit{Seinfeld} episodes across all nine
+seasons, with structured dialogue data including speaker
+identification, line numbers, and the dialogue text itself. Two clip
+show episodes were excluded from our dataset (the 100th Episode
+Special and The Clip Show, Parts I \& II), as their scripts were
+unavailable on IMSDB. Character information, including names, gender,
+occupation, and actor portrayals, was gathered by crawling character
+pages alphabetically from the Fandom Wiki, for a total of 330 unique
+characters. Data is stored in a SQLite \cite{sqlite} database using
+SQLAlchemy ORM \cite{sqlalchemy};
+HTTP response caching is implemented to minimize repeated requests
+against the source websites during development and testing. Rate
+limits, crawl delays, and prohibited resources for crawling were
+respected where applicable for each site.
 
+\subsection{Name Resolution}
+
+\par
+Due to the nature of scripts from the IMSDb being contributor-submitted,
+there were often formatting inconsistencies with character cues. To
+accurately attribute lines to characters, we devised a name
+resolution algorithm. The algorithm calculates the maximum likelihood
+estimation (MLE) of character identity by Jaro-Winkler distance
+\cite{jellyfish}, phonetic similarity \cite{jellyfish}, and character popularity
+metrics to resolve ambiguous or variant character names to their
+canonical forms. The MLE estimate for an observed name $n_{obs}$ is given by:
+
+\small
+\[
+  \hat{c} = \arg \max_{c_i \in C} \left[ \Pr(n_{obs} | c_i),
+  \mathrm{Popularity}(c_i) \right]
+\]
+\normalsize
+
+\noindent
+...where the maximization is lexicographic (prioritizing likelihood,
+then popularity), and:
+
+\small
+\[
+  \Pr(n_{obs} | c_i) = \min \left( 1.0,
+    \mathrm{JW}(n_{obs}, n_i) + 0.1 \cdot \mathrm{Ph}(n_{obs}, n_i)
+  \right)
+\]
+\normalsize
+
+\noindent
+...with $\mathrm{Popularity}(c_i)$ denoting the popularity rank of
+character $c_i$ (higher is more popular), $\mathrm{JW}(a, b)$
+denoting the Jaro-Winkler distance between strings $a$ and $b$, and
+$Ph(a, b)$ equating to 1 if strings $a$ and $b$ are a phonetic match
+(via Metaphone comparison), 0 otherwise. The popularity of a
+character $\mathrm{Popularity}(c_i)$ is given by:
+
+\small
+\[
+  \mathrm{Popularity}(c_i) = \frac{\deg(c_i)}{\sum_{c \in C} \deg(c)}
+\]
+\normalsize
+
+\noindent
+...where the in-degree of a character $c_i$, $\deg(c_i)$, is given by:
+
+\small
+\[
+  \deg(c_i) = \sum_{c \in C, c \neq c_i} \left| \{ a \mid a
+  \text{ points to $c_i$}, \forall a \in \mathrm{anchors}(c)  \} \right|
+\]
+\normalsize
+
+\noindent
+...where $\mathrm{anchors}(c)$ is the set of all \texttt{a}
+(anchor) tags on the Fandom character page for character $c$.
+
+\subsection{Character Selection}
+
+\begin{table}[htbp]
+  \centering
+  \begin{tabular}{|l|c|}
+    \hline
+    \textbf{Character Type} & \textbf{Appearance Frequency} \\ \hline
+    Main & $f(c) \geq 0.70$ \\ \hline
+    Side & $0.10 \leq f(c) < 0.70$ \\ \hline
+    Recurring & $0.05 \leq f(c) < 0.10$ \\ \hline
+    Guest & $f(c) < 0.05$ \\ \hline
+  \end{tabular}
+  \caption{
+    Character typing based on episode appearance frequency.
+    Thresholds experimentally chosen to accurately reflect
+    narrative importance.
+  }
+  \label{fig:character_typing}
+\end{table}
+
+\par
+The complete corpus counts a total of 46,179 dialogue lines, from
+which 39,668 are distinct. In order to recognize side characters for
+the analysis, we categorized characters based on their episode
+appearance frequency. We experimentally iterated on frequency bounds
+in order to accurately capture the notion of character type based on
+our prior knowledge of the show. We eventually reached stability with
+the parameters listed in Table \ref{fig:character_typing}. From the side
+character category, we chose the top five characters by the number of
+dialogue lines: Frank Costanza, Helen Seinfeld, Morty Seinfeld,
+Newman, and Susan Ross.
+
+\subsection{Line Selection}
+
+\par
+For each selected character, we extracted dialogue lines with a
+minimum length of 15 characters to filter out trivial utterances such
+as greetings or single-word responses. The filtering step was
+necessary so that our analysis focuses on substantive speech acts
+rather than conversational filler. After applying the filter, we
+collected 2,150 lines across the five side characters:
+
+\begin{table}[htbp]
+  \centering
+  \begin{tabular}{|l|c|}
+    \hline
+    \textbf{Character} & \textbf{Line Count} \\ \hline
+    Newman & 547 \\ \hline
+    Morty Seinfeld & 474 \\ \hline
+    Helen Seinfeld & 421 \\ \hline
+    Frank Costanza & 393 \\ \hline
+    Susan Ross & 315 \\ \hline
+  \end{tabular}
+  \caption{Post-processing line counts per character.}
+  \label{fig:character_lines}
+\end{table}
+
+\noindent
+...giving an average of 430 lines per character. This quantity is
+above the 300
+lines required per character for the analysis, considering that there
+will be a lot of banter. It also gives enough data for both the open
+coding phase (100 lines per character) and the full annotation of
+non-banter dialogue. We randomly sampled lines from the filtered set,
+taking care not to bias our sample toward particular topics or
+narrative contexts. For reproducibility, this random sampling is done
+with a fixed random seed.
+
+% ===============================
+% METHODS
+% ===============================
 \section{Methods}
 
-Todo
+\par
+Our methodology consisted of three phases: codebook development
+through open coding, manual annotation, and topic characterization.
 
+\subsection{Codebook Development}
+
+\par
+To develop our topic categories, each team member independently
+conducted open coding on 100 randomly sampled lines from each of the
+five selected characters (500 lines total per annotator). Each line
+was assigned to exactly one topic category. After independent coding,
+the team compared their resulting typologies and discussed
+discrepancies. We converged quickly on a final codebook containing
+eight categories: Food, Relationships, Work, Money, Lifestyle,
+Culture, Health, and Miscellaneous. The Miscellaneous category
+captures lines that do not fit into any specific topic, including
+greetings and uncategorizable content. Each category in the codebook
+includes a description and annotated examples indicating whether a
+given line should be included and why.
+
+\subsection{Annotation Process}
+
+\par
+We used Label Studio as our primary annotation interface for manual
+labeling of the full dataset. Each team member independently
+annotated the complete set of 2,150 lines. Annotators were presented
+with individual dialogue lines without surrounding context, requiring
+them to classify each line based solely on its content. This design
+decision ensured that topic assignments reflected the intrinsic
+content of each utterance rather than being influenced by
+conversational flow. In addition to manual annotation, we employed
+two large language models (\texttt{gpt-oss:120b} \cite{gptoss120} and
+\texttt{minimax-m2} \cite{minimaxm2}) to annotate the
+complete dataset.
+
+\begin{table}[htbp]
+  \centering
+  \begin{tabular}{|l|c|c|}
+    \hline
+    \textbf{Annotator} & \textbf{Type} & \textbf{Weight} \\ \hline
+    Daniel Greco & Human & 1.0 \\ \hline
+    Denis Tsariov & Human & 1.0 \\ \hline
+    Kejun Fang & Human & 1.0 \\ \hline
+    \texttt{gpt-oss:120b} & LLM & 0.75 \\ \hline
+    \texttt{minimax-m2} & LLM & 0.5 \\ \hline
+  \end{tabular}
+  \caption{
+    Annotator weights in a majority voting scheme.
+    Note that LLMs are only used as tie-breakers, hence their lower weights.
+  }
+  \label{fig:annotator_weights}
+\end{table}
+
+\par
+To resolve disagreements, we used a majority voting scheme among the
+three human annotators. The algorithm we specifically used was
+\textit{hierarchical weighted majority voting} \cite{meyen2021group}.
+When a majority could not achieve consensus on a category, the LLM
+annotations were factored in as tie-breakers. If the LLMs also
+disagreed on a category suggested by the human annotators, the line
+was marked as \texttt{UNKNOWN}, indicating that the content was too
+ambiguous to accurately label (i.e. banter that slipped through our
+initial filter.) This process resulted in only 8 lines marked as
+\texttt{UNKNOWN} out of 2,150 total ($\approx 0.37$\%), demonstrating
+strong overall agreement.
+
+\subsection{Topic Characterization}
+
+\par
+To identify the most representative terms for each topic category, we
+applied term frequency-inverse document frequency (TF-IDF) weighting.
+For each topic, we aggregated all annotated lines belonging to that
+category into a single document, then computed TF-IDF scores across
+the resulting corpus of eight topic documents. We additionally
+calculated a distinctiveness score for each term, measuring how
+uniquely associated a word is with its highest-scoring topic relative
+to other topics. Terms with high TF-IDF scores and high
+distinctiveness represent vocabulary that both frequently appears
+within a topic and rarely appears elsewhere, providing interpretable
+characterizations of each topical category.
+
+% ===============================
+% RESULTS
+% ===============================
 \section{Results}
 
-Todo
+\subsection{Topics Selected}
 
+\par
+We identified nine topical categories representing the primary
+conversational domains of \textit{Seinfeld}'s side characters. Definitions for
+each category are provided below.
+
+\begin{itemize}
+  \item \textbf{Food}: Lines about eating, food, restaurants, meals,
+    and dining experiences.
+  \item \textbf{Relationships}: Lines about \textit{romantic} relationships,
+    dating, attraction, breakups, and interpersonal dynamics within
+    romantic contexts.
+  \item \textbf{Work}: Lines about jobs, workplace responsibilities,
+    supervisors, coworkers, or other career-related matters.
+  \item \textbf{Money}: Lines about money, prices, costs, deals, or
+    economic transactions.
+  \item \textbf{Lifestyle}: Lines about apartments, living
+    arrangements, neighborhoods, city locations, and daily life in
+    New York City.
+  \item \textbf{Culture}: Lines about sports, TV shows, movies,
+    celebrities, or other popular culture references.
+  \item \textbf{Health}: Lines about medical issues, physical
+    conditions, illnesses, bodily discomfort, or interactions with doctors.
+  \item \textbf{Emotion/Feeling}: Lines about emotional reactions,
+    subjective states, strong opinions, or other emotion-driven
+    statements. Note that expressions of romantic attraction are
+    categorized under \emph{Relationships}.
+  \item \textbf{Miscellaneous}: Lines about general statements,
+    greetings, or other content that does not fit any specific topic category.
+\end{itemize}
+
+\subsection{Topic Characterization}
+
+\begin{table}[h]
+  \centering
+  \scriptsize
+  \begin{tabular}{|l|c|c|c|c|c|}
+    \hline
+    \textbf{Topic} & \textbf{$t_1$} & \textbf{$t_2$} & \textbf{$t_3$} &
+    \textbf{$t_4$} & \textbf{$t_5$} \\ \hline
+
+    Culture & festivus & movie & watch & guide & danson \\ \hline
+    Emotion & good & like & thank & kid & sorry \\ \hline
+    Food & eat & glass & dinner & cook & pie \\ \hline
+    Health & doctor & problem & sleep & man & tape \\ \hline
+    Lifestyle & stay & place & house & sleep & apartment \\ \hline
+    Money & pay & dollar & money & wallet & cent \\ \hline
+    Relationships & love & woman & friend & wedding & beautiful \\ \hline
+    Work & work & banker & year & business & desk \\ \hline
+  \end{tabular}
+  \normalsize
+  \caption{Top 5 terms per topic ranked by TF-IDF score.}
+  \label{tab:tfidf}
+\end{table}
+
+\par
+To validate our topic definitions and understand the lexical markers
+of each category, we analyzed the top terms identified by our TF-IDF
+scoring. The five highest-scoring terms for each category are shown
+in Table 1. Analysis here shows that the speech of side characters is
+bimodal -- either highly ground in the lore of \textit{Seinfeld} or
+representative of linguistic patterns.
+
+\par
+For example, the \emph{Culture}
+category is highly determined by ``festivus'' ($w \approx 0.06$)
+and ``danson''
+($w \approx 0.03$). The former, ``festivus'', refers to a secular and
+non-commmercial alternative holiday to Christmas celebrated by the
+Costanzas \cite{seinfeldwiki}. The latter, ``danson'', refers to
+actor Ted Danson, with
+whom George Costanza has an ongoing obsession with throughout the
+series \cite{seinfeldwiki}.
+
+\par
+Likewise, the \emph{Health} category includes ``serenity'' ($w \approx
+0.02$), which links health discussions to Frank Costanza's
+blood-pressure mantra ``serenity now'' -- a line often repeated by
+Frank Costanza, specifically in the the episode ``The Serenity Now''
+\cite{seinfeldwiki}.
+
+\par
+The \emph{Lifestyle} category captures the specific geography of the
+show, with ``del boca vista'' ($w \approx 0.02$) and ``florida'' ($w
+\approx 0.02$) referring to the fictional retirement community within
+\textit{Seinfeld} \cite{seinfeldwiki}, whereas ``apartment'' and
+``street'' refer to more general aspects of the locale of the show,
+New York City. \emph{Money} is characterized by transactional terms
+(``pay,'' ``dollar,'' ``wallet''), while \emph{Work} reflects the
+white-collar and service roles of the characters (``banker,''
+``deliver,'' ``interview'').
+
+\subsection{Topic Engagement by Character}
+
+\par
+We analyzed the distribution of topics for each character to answer
+our second research question regarding character attention. The
+aggregated topic distributions reveal distinct archetypes for
+each side character.
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=\linewidth]{fig/topic_proportions_by_character.png}
+  \caption{Proportion of dialogue lines dedicated to each topic per
+    character. Note Morty Seinfeld's distinct focus on Money and Susan
+  Ross's focus on Relationships.}
+  \label{fig:topic_distribution}
+\end{figure}
+
+\par
+\textbf{Frank Costanza} is defined by high volatility; his dialogue
+is dominated by \emph{Emotion/Feeling} (24.3\% of lines) and
+\emph{Food}, reflecting his tendency toward loud outbursts and family
+dinner scenes.
+\textbf{Morty Seinfeld} shows a unique specialization in
+\emph{Money}, which constitutes nearly 15\% of his
+dialogue—significantly higher than any other character—aligning with
+his obsession over ``the deal'' and financial details.
+\textbf{Susan Ross}, as George's fiancé, is heavily skewed toward
+\emph{Relationships} and \emph{Emotion}, which together make up over
+35\% of her lines.
+\textbf{Newman} exhibits the highest engagement with \emph{Food}
+among all subjects, alongside a substantial \emph{Work} component,
+consistent with his role as a mailman and frequent snacker.
+\textbf{Helen Seinfeld} acts as a narrative stabilizer; her
+distribution is the most balanced, with moderate engagement across
+\emph{Relationships}, \emph{Emotion}, and \emph{Lifestyle}, often
+reacting to the obsessions of those around her rather than driving a
+single thematic niche.
+
+\subsubsection{Evolution Across Seasons}
+
+\par
+Longitudinal analysis highlights how character roles shifted over time.
+\textbf{Morty Seinfeld} sees a dramatic spike in \emph{Money}-related
+dialogue in Season 6, where it peaks at 40\% of his lines, coinciding
+with storylines focused on his wallet and business ventures.
+\textbf{Susan Ross} displays a clear trajectory defined by her
+relationship with George. Her dialogue is consistently dominated by
+\emph{Relationships}, but shifts toward \emph{Emotion/Feeling} in
+Season 7 leading up to her death. The apparent spike in Season 9
+(40\% \emph{Emotion}) is an artifact of sparse data; Susan appears in
+only 5 lines in the finale (flashbacks), 2 of which were emotional in nature.
+\textbf{Newman} displays a notable anomaly in Season 2, where
+\emph{Culture} appears to constitute over 30\% of his dialogue. This
+is due to an extremely small sample size (only 3 lines total in
+Season 2), where a single reference to a cultural topic skewed the
+proportion. In later seasons (3--9), his profile stabilizes with
+consistent contributions to \emph{Food} and \emph{Work}.
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=\linewidth]{fig/topic_season_evolution_morty.png}
+  \caption{Morty Seinfeld's topic evolution, highlighting the
+  Season 6 spike in 'Money'.}
+  \label{fig:morty_evolution}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=\linewidth]{fig/topic_season_evolution_susan.png}
+  \caption{Susan Ross's topic evolution. Note the shift to
+  'Emotion' in Season 9 (flashback scenes).}
+  \label{fig:susan_evolution}
+\end{figure}
+
+% ===============================
+% DISCUSSION
+% ===============================
 \section{Discussion}
 
-Todo
+\par
+Our analysis suggests that the dialogue of \textit{Seinfeld} side
+characters is not merely conversational filler but is highly
+specialized in order to reinforce distinct character archetypes. By
+quantifying engagement with topics, we can map the narrative
+functions these characters serve.
 
-\section{Contributions}
+\subsection{Thematic Specialization as Character Definition}
 
-Todo
+\par
+The results indicate that side characters in \textit{Seinfeld} are
+often defined by a single, dominating obsession that anchors their
+comedic role.
 
-\bibliography{aaai24}
+\par
+
+\subsubsection{Morty Seinfeld}
+
+\par
+Morty Seinfeld embodies the ``provider'' or ``hustler'' archetype. His
+dialogue is disproportionately oriented toward \emph{Money} (15\%
+of lines), while that topic hardly registers for other characters
+(see Figure \ref{fig:topic_distribution}). The TF-IDF analysis
+further emphasizes this with terms like ``dollar,'' ``pay,'' and
+``wallet''. This quantitative profile correlates well with his
+narrative function as a character always obsessed with deals, prices,
+and financial survival. The spike in \emph{Money} dialogue during
+Season 6 to almost 40\% of lines suggests entire narrative arcs were
+constructed around this trait, reducing him to a unidimensional
+figure to serve the plot.
+
+\subsubsection{Frank Costanza}
+
+\par
+By contrast, Frank Costanza is an agent of chaos. The fact
+that he leads the \emph{Emotion/Feeling} category by a wide margin
+(approx. 25\%) confirms that he is a volatile character.
+Incidentally, the \emph{Health} category for Frank features the term
+``serenity'' (TF-IDF score 0.017). This lexical marker ironically links
+his health issues with his emotional outbursts (the ``Serenity Now''
+mantra), demonstrating how the show embeds catchphrases into
+topically relevant speeches.
+
+\subsubsection{Newman}
+
+\par
+Newman functions as a sort of ``hedonistic antagonist.''
+Newman is the only character whose most dominant topics include both
+\emph{Work} and \emph{Food}. The strong distinctiveness of
+food-related terms in our corpus (``pie,'' ``cook,'' ``taste'') is often
+related to Newman's scenes, as if his villainy is usually encoded by
+gluttony or physical indulgence. His strong activity with \emph{Work}
+dialogue is also remarkable; as the main cast generally avoids
+talking of work, Newman often discusses his job (the post office),
+frequently to complain or wield its bureaucratic power.
+
+\subsection{Narrative Roles: Drivers vs. Reactors}
+
+\par
+The difference between ``drivers'' of plot and ``reactors'' is epitomized
+in the difference between \textbf{Susan Ross} and \textbf{Helen Seinfeld}.
+
+\subsubsection{Susan Ross}
+
+\par
+The profile for Susan is heavily weighted toward
+\emph{Relationships}, effectively stripping her of an independent
+thematic identity outside of her engagement with George Costanza.
+Unlike Morty (Money) or Newman (Food), Susan does not have a ``hobby''
+topic; her dialogue exists almost exclusively to advance the romantic
+(and later tragic) plotline \cite{seinfeldwiki}. This is visually
+confirmed by her evolution chart, where the shift from \emph{Relationships} to
+\emph{Emotion} tracks the dissolution of her engagement and eventual
+death, leaving no ``Miscellaneous'' or ``Culture'' buffer that would
+indicate a fleshed-out persona.
+
+\subsubsection{Helen Seinfeld}
+
+\par
+By contrast, Helen Seinfeld performs
+the function of the ``narrative stabilizer.'' Her value is roughly
+equally divided among Lifestyle, Relationships, and Emotion. Her
+distribution lacks the sharp spikes of Frank or Morty, which
+indicates her comic role is to represent a response to extremes,
+rather than create new chaotic forces. She represents the "straight
+woman" required to anchor the absurdities of the Seinfeld/Costanza dynamic.
+
+\subsection{The Self-Referential Nature of ``Culture''}
+
+\par
+Finally, our TF-IDF analysis of the \emph{Culture} topic shows the
+insular nature of the show's universe. The highest-scoring terms are
+not general pop culture references but specific, self-referential
+plot points like ``festivus'' and ``danson''. This indicates that when side
+characters discuss ``culture,'' they are rarely discussing the outside
+world; rather, they are discussing the specific, bizarre cultural
+reality constructed within the show's writing. This reinforced the
+``no hugging, no learning'' ethos by keeping the characters locked
+within their own hermetic, self-obsessed loop.
+
+% ===============================
+% CONTRIBUTIONS
+% ===============================
+\section{Group Member contributions}
+
+\par
+All group members contributed equally to this project. Daniel Greco
+focused primarily on data collection and statistical analysis.
+Denis Tsariov and Kejun Fang concentrated on result
+interpretation and thematic analysis, providing insights and
+contextual understanding of the findings. Throughout the process, all
+members collaborated on drafting, revising, and finalizing the
+report, ensuring a cohesive and high-quality presentation of the work.
+
+% ===============================
+% REFERENCES
+% ===============================
+
+\renewcommand*{\bibfont}{\footnotesize}
+\printbibliography
 
 \end{document}

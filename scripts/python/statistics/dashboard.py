@@ -17,6 +17,7 @@ from bokeh.models import (
     CustomJS,
 )
 from bokeh.palettes import Category10_8
+from bokeh.io.export import export_png
 
 from comp370.constants import DIR_DATA
 
@@ -101,13 +102,17 @@ def create_stacked_bar_chart(df, title="Character Dialogue by Topic"):
             ratio = overall_data[mask]["ratio"].values
             data[topic].append(ratio[0] if len(ratio) > 0 else 0)
 
+    width = 900
+    height = int(width * 3 / 4)
     p = figure(
         x_range=characters,  # type: ignore
-        height=500,
-        width=900,
+        width=width,
+        height=height,
         title=title,
         toolbar_location="above",
         tools="pan,wheel_zoom,box_zoom,reset,save",
+        background_fill_color="white",
+        border_fill_color="white",
     )
 
     # Create stacked bars using vbar_stack
@@ -151,12 +156,16 @@ def create_season_line_chart(df, character_name):
     if char_data.empty:
         return None
 
+    width = 900
+    height = int(width * 3 / 4)
     p = figure(
-        height=400,
-        width=900,
+        width=width,
+        height=height,
         title=f"{character_name}: Topic Distribution Across Seasons",
         toolbar_location="above",
         tools="pan,wheel_zoom,box_zoom,reset,save",
+        background_fill_color="white",
+        border_fill_color="white",
     )
 
     topics = char_data["topic"].unique()
@@ -223,13 +232,17 @@ def create_topic_comparison(df):
         )
     )
 
+    width = 900
+    height = int(width * 3 / 4)
     p = figure(
         x_range=characters,  # type:  ignore
-        height=400,
-        width=900,
+        width=width,
+        height=height,
         title=f"Character Comparison: {topic}",
         toolbar_location="above",
         tools="pan,wheel_zoom,box_zoom,reset,save",
+        background_fill_color="white",
+        border_fill_color="white",
     )
 
     p.vbar(
@@ -284,14 +297,18 @@ def create_character_heatmap(df):
         palette=RdYlBu11[::-1], low=min(ratio_list), high=max(ratio_list)
     )
 
+    width = 900
+    height = int(width * 3 / 4)
     p = figure(
         x_range=topics,  # type:  ignore
         y_range=characters,  # type:  ignore
-        height=400,
-        width=900,
+        width=width,
+        height=height,
         title="Character-Topic Heatmap (Overall)",
         toolbar_location="above",
         tools="pan,wheel_zoom,box_zoom,reset,save,hover",
+        background_fill_color="white",
+        border_fill_color="white",
     )
 
     p.rect(

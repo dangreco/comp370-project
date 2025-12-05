@@ -32,6 +32,7 @@
                       courier
                       algorithms
                       latexindent
+                      biblatex
                     ]
                   )
                 );
@@ -134,6 +135,7 @@
 
                   # LaTeX
                   perl
+                  biber
                   latex
 
                   texlab
