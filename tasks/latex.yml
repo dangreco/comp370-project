@@ -17,6 +17,14 @@ tasks:
     cmds:
       - scripts/latex/build.sh docs/report/report.en.tex docs/report/_build
 
+  sign:
+    desc: Sign LaTeX PDF document
+    silent: true
+    deps:
+      - build
+    cmds:
+      - scripts/latex/sign.sh
+
   watch:
     desc: Build LaTeX document in watch mode
     silent: true

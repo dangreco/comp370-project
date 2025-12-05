@@ -50,6 +50,9 @@ jobs:
         with:
           use-flakehub: false
 
+      - name: Initialize Nix shell
+        run: nix develop --command true
+
       - name: Run tests
         run: nix develop --command task test
 

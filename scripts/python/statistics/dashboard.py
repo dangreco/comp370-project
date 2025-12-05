@@ -17,7 +17,6 @@ from bokeh.models import (
     CustomJS,
 )
 from bokeh.palettes import Category10_8
-from bokeh.io.export import export_png
 
 from comp370.constants import DIR_DATA
 
