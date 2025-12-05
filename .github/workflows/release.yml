@@ -45,8 +45,8 @@ jobs:
         uses: softprops/action-gh-release@de2c0eb89ae2a093876385947365aca7b0e5f844 # v0.1.15
         with:
           files: |
-            .docs/report/_build/report.en.pdf
-            .docs/report/_build/report.en.pdf.asc
-            .docs/report/_build/checksums.txt
+            docs/report/_build/report.en.pdf
+            docs/report/_build/report.en.pdf.asc
+            docs/report/_build/checksums.txt
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
